@@ -22353,70 +22353,6 @@ namespace Lavary\Menu {
             }
     }
 
-namespace App\Currency {
-    /**
-     * 
-     *
-     */
-    class CurrencyFacades {
-        /**
-         * Get the current admin's default currency.
-         *
-         * @static 
-         */
-        public static function getDefaultCurrency()
-        {
-            /** @var \App\Currency\CurrencyChange $instance */
-            return $instance->getDefaultCurrency();
-        }
-
-        /**
-         * 
-         *
-         * @static 
-         */
-        public static function getSuperAdminDefaultCurrency()
-        {
-            /** @var \App\Currency\CurrencyChange $instance */
-            return $instance->getSuperAdminDefaultCurrency();
-        }
-
-        /**
-         * Get the currency symbol for the current admin.
-         *
-         * @static 
-         */
-        public static function defaultSymbol()
-        {
-            /** @var \App\Currency\CurrencyChange $instance */
-            return $instance->defaultSymbol();
-        }
-
-        /**
-         * Format an amount based on the **super admin's** currency (For Billing Only)
-         *
-         * @static 
-         */
-        public static function formatSuperadmin($amount)
-        {
-            /** @var \App\Currency\CurrencyChange $instance */
-            return $instance->formatSuperadmin($amount);
-        }
-
-        /**
-         * Format an amount based on the **admin's** default currency (For Regular Pages)
-         *
-         * @static 
-         */
-        public static function format($amount)
-        {
-            /** @var \App\Currency\CurrencyChange $instance */
-            return $instance->format($amount);
-        }
-
-            }
-    }
-
 namespace Barryvdh\DomPDF\Facade {
     /**
      * 
@@ -31168,7 +31104,6 @@ namespace  {
     class Vite extends \Illuminate\Support\Facades\Vite {}
     class Menu extends \Lavary\Menu\Facade {}
     class AuthHelper extends \App\Helpers\AuthHelper {}
-    class Currency extends \App\Currency\CurrencyFacades {}
     class PDF extends \Barryvdh\DomPDF\Facade\Pdf {}
     class Pdf extends \Barryvdh\DomPDF\Facade\Pdf {}
     class Flash extends \Laracasts\Flash\Flash {}
