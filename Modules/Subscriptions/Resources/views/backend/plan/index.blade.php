@@ -65,10 +65,24 @@
     { data: 'type', name: 'type', title: "{{ __('frontend.interval') }}" },
     { data: 'duration', name: 'duration', title: "{{ __('frontend.duration') }}" },
     { data: 'price', name: 'price', title: "{{ __('frontend.price') }}" },
+    { data: 'discount_value', name: 'discount_value', title: '{{__("messages.discount")}}'},
     { data: 'tax', name: 'tax', title: "{{ __('frontend.tax') }}" },
     { data: 'total_price', name: 'total_price', title: "{{ __('frontend.total_price') }}" },
+    { 
+        data: 'subscription_count', 
+        name: 'subscription_count', 
+        title: "{{ __('frontend.total_subscriptions') }}",
+        render: function(data, type, row) {
+            if (type === 'display') {
+                return `<span data-bs-toggle="tooltip" 
+                             data-bs-placement="top" 
+                             title="{{ __('frontend.total_subscriptions_tooltip') }}">${data}</span>`;
+            }
+            return data;
+        }
+    },
     { data: 'status', name: 'status', orderable: false, searchable: true, title: "{{ __('frontend.status') }}" , visible: userRole=='super admin'},
-
+    
         ];
 
 

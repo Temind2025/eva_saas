@@ -6,7 +6,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12 mb-3">
             <div class="d-flex justify-content-between align-items-md-center gap-3 flex-md-row flex-column mb-4">
                 <h3 class="mb-0">{{ __('dashboard.lbl_performance') }}</h3>
                 <div class="d-flex  align-items-center">
@@ -48,6 +48,7 @@
                 </a>
                 </div>
                 <div class="col-md-6 col-lg-3 mt-md-0 mt-3">
+                    <a href="{{ route('backend.subscriptions.all_subscription')}}">
                     <div class="dashboard-cards services p-5 bg-primary-subtle rounded">
                         <div class="d-flex align-items-center justify-content-between title">
                             <h2 class="text-primary fw-semibold mb-0">{{ $total_revenue }}</h2>
@@ -66,6 +67,7 @@
                         </div>
                         <h5 class="mb-0">{{ __('dashboard.lbl_tot_revenue') }}</h5>
                     </div>
+                </a>
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <a href="{{ route('backend.subscriptions.index')}}">
@@ -104,10 +106,37 @@
                         <h5 class="mb-0">{{__('messages.retention_rate')}}</h5>
                     </div>
                 </div>
+                <div class="col-md-6 col-lg-3 mt-md-0 mt-3">
+                    <a href="{{ route('backend.subscription.plans.index')}}">
+                    <div class="dashboard-cards services p-5 bg-primary-subtle rounded">
+                        <div class="d-flex align-items-center justify-content-between title">
+                            <h2 class="text-primary fw-semibold mb-0">{{ $total_plans??0 }}</h2>
+                            <div class="dashboard-icon" data-bs-toggle="tooltip" data-bs-title="{{ __('dashboard.lbl_total_plans') }}">
+                                <i class="fa-solid fa-table"></i>
+                                
+                            </div>
+                        </div>
+                        <h5 class="mb-0">{{ __('dashboard.lbl_tot_plan') }}</h5>
+                    </div>
+                </a>
+                </div>
+                <!-- Add this after your existing cards -->
+                <div class="col-md-6 col-lg-3 mt-lg-0 mt-3">
+                        <div class="dashboard-cards warning p-5 bg-primary-subtle rounded">
+                            <div class="d-flex align-items-center justify-content-between title">
+                                <h2 class="text-primary fw-semibold mb-0">{{ $expiringSoon }}</h2>
+                                <div class="dashboard-icon" data-bs-toggle="tooltip" data-bs-title="{{ __('dashboard.expiring_soon') }}">
+                                <i class="fa-solid fa-hourglass-start"></i>
+                                </div>
+                            </div>
+                            <h5 class="mb-0">{{ __('dashboard.expiring_soon') }}</h5>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
        
-        <div class="col-lg-12">
+        <div class="col-lg-12 mt-3">
             <div class="card card-block card-stretch card-height">
                 <div class="card-body">
                     <div class=" d-flex justify-content-between flex-wrap">

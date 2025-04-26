@@ -33,4 +33,12 @@ return [
     'duration' => 'المدة',
     'plan' => 'الخطة',
     'vendor' => 'البائع',
+    'lbl_tot_plan' => 'إجمالي الخطط', 
+    'total_active_subscriptions' => 'إجمالي الاشتراكات النشطة',
+    'total_expired_subscriptions' => 'إجمالي الاشتراكات المنتهية',
+    'total_pending_subscriptions' => 'إجمالي الاشتراكات المعلقة',
+    'total_subscriptions' => 'إجمالي الاشتراكات',
+    'lbl_total_plans' => 'إجمالي الخطط',
+    'expiring_soon' => 'تنتهي قريبًا',
+
 ];

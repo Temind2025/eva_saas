@@ -7,7 +7,7 @@
 
 <li class="nav-item {{ request()->routeIs('backend.users.index') ? 'active' : '' }}">
     <a target="_self" class="nav-link {{ request()->routeIs('backend.users.index') ? 'active' : '' }}" href="{{ route('backend.users.index') }}">
-        <i class="fa-solid fa-users" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="Users" data-bs-original-title="Users"></i>
+        <i class="fa-solid fa-users" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="Users" data-bs-original-title="Vendors"></i>
         <span class="item-name">{{ __('messages.vendors') }}</span>
     </a>
 </li>
@@ -26,8 +26,8 @@
     </a>
 </li>
 
-<li class="nav-item {{ request()->is('app/subscriptions*') ? 'active' : '' }}">
-    <a href="#subscriptions" data-bs-parent="#sidebar-menu" class="nav-link {{ request()->is('app/subscriptions*') ? 'active' : '' }}" data-bs-toggle="collapse" role="button" aria-expanded="{{ request()->is('app/subscriptions*') ? 'true' : 'false' }}" aria-controls="subscriptions">
+<li class="nav-item {{ request()->is('app/subscriptions*')  && !request()->routeIs('backend.subscriptions.all_subscription')  ? 'active' : '' }}">
+    <a href="#subscriptions" data-bs-parent="#sidebar-menu" class="nav-link {{ request()->is('app/subscriptions*')  && !request()->routeIs('backend.subscriptions.all_subscription') ? 'active' : '' }}" data-bs-toggle="collapse" role="button" aria-expanded="{{ request()->is('app/subscriptions*')  && !request()->routeIs('backend.subscriptions.all_subscription')? 'true' : 'false' }}" aria-controls="subscriptions">
         <i class="icon fa-solid fa-credit-card" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="Subscriptions" data-bs-original-title="Subscriptions"></i>
         <i class="sidenav-mini-icon"> S </i>
         <span class="item-name">{{ __('sidebar.subscriptions') }}</span>
@@ -37,7 +37,7 @@
             </svg>
         </i>
     </a>
-    <ul class="sub-nav collapse {{ request()->is('app/subscriptions*') ? 'show' : '' }}" id="subscriptions" data-bs-parent="#sidebar-menu">
+    <ul class="sub-nav collapse {{ request()->is('app/subscriptions*') && !request()->routeIs('backend.subscriptions.all_subscription')  ? 'show' : '' }}" id="subscriptions" data-bs-parent="#sidebar-menu">
         <li class="nav-item">
             <a class="nav-link {{ request()->routeIs('backend.subscriptions.index') ? 'active' : '' }}" href="{{ route('backend.subscriptions.index') }}">
                 <i class="fa-solid fa-circle" style="font-size: .625rem"></i>
@@ -58,7 +58,12 @@
         </li>
     </ul>
 </li>
-
+<li class="nav-item {{ request()->routeIs('backend.subscriptions.all_subscription') ? 'active' : '' }}">
+    <a target="_self" class="nav-link {{ request()->routeIs('backend.subscriptions.all_subscription') ? 'active' : '' }}" href="{{ route('backend.subscriptions.all_subscription') }}">
+        <i class="fa-solid fa-list-check" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="Tax" data-bs-original-title="Tax"></i>
+        <span class="item-name">{{ __('report.all_subscription') }}</span>
+    </a>
+</li>
 <li class="nav-item {{ request()->routeIs('backend.promotions.index') ? 'active' : '' }}">
     <a target="_self" class="nav-link {{ request()->routeIs('backend.promotions.index') ? 'active' : '' }}" href="{{ route('backend.promotions.index') }}">
         <i class="icon fa-solid fa-ticket" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="Promotions" data-bs-original-title="Promotions"></i>

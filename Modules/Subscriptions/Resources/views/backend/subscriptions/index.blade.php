@@ -32,9 +32,10 @@
                 <div class="col-md-4">
                     <select id="plan-filter" class="form-select select2">
                         <option value="">{{__('messages.select_plan')}}</option>
-                        <!-- Populate plans dynamically -->
                         @foreach($plans as $plan)
-                            <option value="{{ $plan->id }}">{{ $plan->name }}</option>
+                            <option value="{{ $plan->id }}" {{ request()->get('plan_id') == $plan->id ? 'selected' : '' }}>
+                                {{ $plan->name }}
+                            </option>
                         @endforeach
                     </select>
                 </div>

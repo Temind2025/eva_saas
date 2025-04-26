@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -44,6 +43,8 @@ Route::group(['prefix' => 'app', 'as' => 'backend.', 'middleware' => ['auth']], 
         Route::get('/pending', [SubscriptionController::class, 'pending'])->name('pending')->middleware(['auth', 'check.menu.permission']);
         Route::get('/pending_subscription', [SubscriptionController::class, 'pending_subscription'])->name('pending_subscription');
         Route::get('/expired', [SubscriptionController::class, 'expired'])->name('expired')->middleware(['auth', 'check.menu.permission']);
+        Route::get('/all_subscription', [SubscriptionController::class, 'allSubscription'])->name('all_subscription');
+        Route::get('all_subscription_data', [SubscriptionController::class, 'allSubscriptionData'])->name('all_subscription_data');
     });
 
     Route::resource('subscriptions', SubscriptionController::class)->middleware(['auth', 'check.menu.permission']);
@@ -67,10 +68,15 @@ Route::group(['prefix' => 'app', 'as' => 'backend.', 'middleware' => ['auth']], 
 
         Route::resource('plans', PlanController::class)->middleware(['auth', 'check.menu.permission']);
         Route::delete('plans/delete/{id}',[ PlanController::class,'destroy'])->name('plans.delete');
+
+        Route::get('subscriptions/export', [SubscriptionController::class, 'export'])
+            ->name('subscriptions.export');
     });
 
   
-
+    Route::get('subscriptions/export', [SubscriptionController::class, 'export'])
+    ->name('backend.subscriptions.export');
+    
     Route::group(['prefix' => 'subscription', 'as' => 'subscription.'], function () {
         Route::group(['prefix' => '/account', 'as' => 'account.'], function () {
         });

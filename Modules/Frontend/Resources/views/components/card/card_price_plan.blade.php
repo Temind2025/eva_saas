@@ -17,8 +17,11 @@ $plan['currentPlanId'] = $currentPlanId;
         </div>
 
    <div class="p-0">
-       <div class="d-flex align-items-center">
+   <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+      
         <h4 class="text-primary m-0">{{ \Currency::formatSuperadmin($plan->price ?? 0) }}</h4>
+
         <span class="mx-1">/</span>
         @php
             if($plan->duration == 1 && $plan->type == 'Monthly'){
@@ -31,8 +34,20 @@ $plan['currentPlanId'] = $currentPlanId;
                 $plantype = 'Years';
             }
         @endphp
+
         <span>{{ $plan->duration.' '.$plantype ?? '-' }}</span>
+  
        </div>
+       @if($plan->has_discount == 1 && $plan->discounted_price != null)
+            <span class="mx-1">
+                {{ \Currency::formatSuperadmin($plan->discount_value ?? 0) }}
+                @if($plan->discount_type === 'percentage')
+                    %
+                @endif
+             OFF</span>
+        @endif
+      </div>
+
        <h6 class="font-size-18 title mb-2 mt-3">{{ $plan->name ?? '-'}}</h6>
        <p class="m-0 font-size-14 descrption">{{ $plan->description ?? '-'}}</p>
 

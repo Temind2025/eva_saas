@@ -39,7 +39,7 @@ class UserController extends Controller
     public function __construct()
     {
         // Page Title
-        $this->module_title = __('messages.user');
+        $this->module_title = __('messages.lbl_my_profile');
 
         // module name
         $this->module_name = 'users';
@@ -80,7 +80,7 @@ class UserController extends Controller
             })
             ->addColumn('name', function ($data) {
                 return $data->getFullNameAttribute();
-            })
+            })  
             ->editColumn('status', function ($row) {
                 $checked = '';
                 if ($row->status) {
@@ -249,7 +249,7 @@ class UserController extends Controller
         $user->forceDelete(); // This will permanently delete the user
 
     
-        $message = __('messages.delete_form', ['form' => __($this->module_title)]);
+        $message = __('messages.delete_form', ['form' => __('messages.lbl_vendor')]);
 
         return response()->json(['message' => $message, 'status' => true], 200);
     }
@@ -365,7 +365,8 @@ class UserController extends Controller
 
         $data_array = $request->except('_token', 'roles', 'permissions', 'password_confirmation');
         $data_array['name'] = $request->first_name . ' ' . $request->last_name;
-
+        $data_array['created_by'] = auth()->user()->id;
+        $data_array['user_type'] = 'user';
         if ($request->confirmed == 1) {
             $data_array = Arr::add($data_array, 'email_verified_at', Carbon::now());
         } else {

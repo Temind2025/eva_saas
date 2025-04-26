@@ -1,7 +1,7 @@
 @extends('backend.layouts.app')
 
 @section('title')
-    {{ __($module_action) }} {{ __($module_title) }}
+     {{ __($module_title) }}
 @endsection
 @php
     // Convert the permission IDs to an array once
@@ -109,6 +109,85 @@ $permissionIds = isset($plan) && $plan->permission_ids
                                                         <span class="text-danger">*</span></label>
                                                     <input type="number" min="1" class="form-control" id="price" name="price" value="{{ old('price', $plan->price ?? '') }}" required>
                                                     <span class="error text-danger"></span>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">{{__('frontend.discount')}}</label>
+
+                                                    
+                                                     <div class=" d-flex align-items-center justify-content-between form-control">
+                                                        <label class="form-check-label" for="has_discount" >{{__('frontend.discount')}}</label>
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" name="has_discount" type="checkbox" name="has_discount" id="has_discount"  {{ old('has_discount', $plan->has_discount ?? '') ? 'checked' : '' }}>
+                                                        </div>
+                                                    </div>
+                                                    <!-- <div class="form-check form-switch mt-2">
+                                                        <input class="form-check-input"  id="has_discount" type="checkbox"
+                                                            {{ old('has_discount', $plan->has_discount ?? '') ? 'checked' : '' }}>
+                                                        <label class="form-check-label" for="has_discount">
+                                                            {{__('frontend.enable_discount_help')}}
+                                                        </label>
+                                                    </div>  -->
+                                                </div>
+                                            </div>
+
+                                            <div id="discount-fields" class="row {{ old('has_discount', $plan->has_discount ?? '') ? '' : 'd-none' }}">
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="form-label">
+                                                            {{__('frontend.discount_type')}}
+                                                            <span class="text-danger">*</span>
+                                                        </label>
+                                                        <div class="d-flex gap-4">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="discount_type" 
+                                                                    id="discount_type_fixed" value="fixed" 
+                                                                    {{ old('discount_type', $plan->discount_type ?? '') == 'fixed' ? 'checked' : '' }}>
+                                                                <label class="form-check-label" for="discount_type_fixed">
+                                                                    {{__('frontend.fixed')}}
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="discount_type" 
+                                                                    id="discount_type_percentage" value="percentage"
+                                                                    {{ old('discount_type', $plan->discount_type ?? '') == 'percentage' ? 'checked' : '' }}>
+                                                                <label class="form-check-label" for="discount_type_percentage">
+                                                                    {{__('frontend.percentage')}}
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <span class="error text-danger"></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="form-label" for="discount_value">
+                                                            {{__('frontend.discount_value')}} 
+                                                            <span class="text-danger">*</span>
+                                                        </label>
+                                                        <input type="number" min="0" step="0.01" class="form-control" 
+                                                            id="discount_value" name="discount_value" 
+                                                            value="{{ old('discount_value', $plan->discount_value ?? '') }}">
+                                                        <span class="error text-danger"></span>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="form-label" for="discounted_price">
+                                                            {{__('frontend.discounted_price')}}
+                                                            <span class="text-danger">*</span>
+                                                            <span class="text-muted">({{ defaultCurrencySymbol() ?? '' }})</span>
+                                                        </label>
+                                                        <input type="text" class="form-control" id="discounted_price" 
+                                                            name="discounted_price" readonly>
+                                                        <span class="error text-danger"></span>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -322,87 +401,126 @@ $permissionIds = isset($plan) && $plan->permission_ids
             });
         });
 
+        $(document).on('click', '#submit_btn', function(event) {
+            event.preventDefault();
+            
+            // Reset all error messages
+            $('.error').text('');
+            
+            // Basic validations
+            let isValid = true;
+            let name = $('input[name="name"]');
+            let type = $('select[name="type"]');
+            let duration = $('input[name="duration"]');
+            let price = $('input[name="price"]');
+            
+            // Validate based on plan type
+            if (plan_type === 'paid_plan') {
+                // Required fields validation
+                if (!name.val()) {
+                    name.next('.error').text('Name is required.');
+                    isValid = false;
+                }
+                
+                if (!type.val()) {
+                    type.next('.error').text('Type is required.');
+                    isValid = false;
+                }
+                
+                if (!price.val() || parseFloat(price.val()) <= 0) {
+                    price.next('.error').text('Price must be greater than 0.');
+                    isValid = false;
+                }
+                
+                // Duration validation for non-yearly plans
+                if (type.val() && type.val() !== 'Yearly' && (!duration.val() || duration.val() <= 0)) {
+                    duration.next('.error').text('Duration must be greater than 0.');
+                    isValid = false;
+                }
 
+                // Validate permissions
+                if (!$('input[name="permission_ids[]"]:checked').length) {
+                    $('#permissions .error').text('Please select at least one permission.');
+                    $('#permissions-tab').tab('show');
+                    isValid = false;
+                }
 
+                // Validate limits
+                const limits = ['max_appointment', 'max_branch', 'max_service', 'max_staff', 'max_customer'];
+                limits.forEach(limit => {
+                    const input = $(`input[name="${limit}"]`);
+                    if (!input.val() || parseInt(input.val()) <= 0) {
+                        input.next('.error').text('Value must be at least 1.');
+                        $('#limits-tab').tab('show');
+                        isValid = false;
+                    }
+                });
 
-        $(document).on('click','#submit_btn',function (event) {
-    event.preventDefault(); 
-    let name = $('input[name="name"]');
-    let type = $('select[name="type"]');
-    let duration = $('input[name="duration"]');
-    let price = $('input[name="price"]');
-    let max_appointment = $('input[name="max_appointment"]');
-    let max_branch = $('input[name="max_branch"]');
-    let max_service = $('input[name="max_service"]');
-    let max_staff = $('input[name="max_staff"]');
-    let max_customer = $('input[name="max_customer"]');
-    $('.error').text('');
+                // Discount validation
+                if ($('#has_discount').is(':checked')) {
+                    const discountValue = $('#discount_value');
+                    const discountType = $('input[name="discount_type"]:checked').val();
+                    
+                    if (!discountValue.val()) {
+                        discountValue.next('.error').text('Discount value is required.');
+                        isValid = false;
+                    } else {
+                        const dValue = parseFloat(discountValue.val());
+                        const pValue = parseFloat(price.val());
+                        
+                        if (discountType === 'percentage' && (dValue <= 0 || dValue > 100)) {
+                            discountValue.next('.error').text('Percentage must be between 1 and 100.');
+                            isValid = false;
+                        } else if (discountType === 'fixed' && (dValue <= 0 || dValue >= pValue)) {
+                            discountValue.next('.error').text('Fixed discount must be less than price.');
+                            isValid = false;
+                        }
+                    }
+                    
+                    if (!discountType) {
+                        $('#discount-fields .error').first().text('Please select discount type.');
+                        isValid = false;
+                    }
+                }
+            }
 
-    if (plan_type == 'paid_plan') {
-        if (price.val() <= 0) {
-            price.next('.error').text('Price must be greater than 0.');
-            return; 
+            // If validation passes, submit the form
+            if (isValid) {
+                // Enable all fields before submission
+                $('#discount_value, #discount_type, #discounted_price').prop('disabled', false);
+                
+                // Get the form
+                const form = $('#plan-form');
+                
+                // Add plan type to form data
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'plan_type',
+                    value: plan_type
+                }).appendTo(form);
+                
+                // Submit the form
+                form.submit();
+            }
+
+            
+        });
+
+        // Initialize select2
+        $('.select2').select2();
+
+        // Initialize tab functionality
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+            const target = $(e.target).attr('href');
+            localStorage.setItem('activeTab', target);
+        });
+
+        // Restore active tab
+        const activeTab = localStorage.getItem('activeTab');
+        if (activeTab) {
+            $('a[href="' + activeTab + '"]').tab('show');
         }
-
-        if (duration.val() <= 0) {
-            duration.next('.error').text('Duration must be greater than 0.');
-            return;
-        }
-
-        if (price.val() < 0) {
-            price.next('.error').text('The value must be a positive value.');
-            return;
-        }
-        if (!name.val() || !type.val() || !price.val()) {
-            if (!name.val()) {
-                name.next('.error').text('This field is required.');
-            }
-            if (!type.val()) {
-                type.next('.error').text('This field is required.');
-            }
-            if (type.val() && type.val() !== 'Yearly' && !duration.val()) {
-                duration.next('.error').text('This field is required.');
-            }
-            if (!price.val()) {
-                price.next('.error').text('This field is required.');
-            }
-            return;
-        } else if (type.val() !== 'Yearly' && !duration.val()) {
-            duration.next('.error').text('This field is required.');
-            return;
-        } else if (!$('input[name="permission_ids[]"]:checked').length) {
-            // At least one permission should be selected
-            $('#permissions .error').text('Please select at least one permission.');
-            $('#permissions-tab').trigger('click');
-            return;
-        } else if(max_appointment.val() <= 0  || max_branch.val() <= 0  || max_service.val() <= 0  || max_staff.val() <= 0  || max_customer.val() <= 0 ) {
-            $('#limits-tab').trigger('click');
-            if (max_appointment.val() <= 0 ) {
-                max_appointment.next('.error').text('The value must be at least 1.');
-            }
-
-            if (max_branch.val() <= 0 ) {
-                max_branch.next('.error').text('The value must be at least 1.');
-            }
-
-            if (max_service.val() <= 0 ) {
-                max_service.next('.error').text('The value must be at least 1.');
-            }
-
-            if (max_staff.val() <= 0 ) {
-                max_staff.next('.error').text('The value must be at least 1.');
-            }
-
-            if (max_customer.val() <= 0 ) {
-                max_customer.next('.error').text('The value must be at least 1.');
-            }
-            return; 
-        }
-    }
-    $("#plan-form").trigger("submit");
-
-});
-</script>
+    </script>
     <script>
         $(document).ready(function () {
             // Handle the "+" button click
@@ -430,6 +548,131 @@ $permissionIds = isset($plan) && $plan->permission_ids
                 }
             });
         });
+
+         // Add this to your existing JavaScript
+         $(document).ready(function() {
+            // Handle discount toggle
+            $('#has_discount').change(function() {
+                $('#discount-fields').toggleClass('d-none', !this.checked);
+                if (!this.checked) {
+                    $('#discount_value').val('');
+                    $('#discounted_price').val('');
+                } else {
+                    calculateDiscountedPrice();
+                }
+            });
+
+            // Calculate discounted price
+            function calculateDiscountedPrice() {
+                const price = parseFloat($('#price').val()) || 0;
+                const discountValue = parseFloat($('#discount_value').val()) || 0;
+                const discountType = $('#discount_type').val();
+                
+                let discountedPrice = price;
+                
+                if (discountType === 'percentage') {
+                    if (discountValue > 100) {
+                        $('#discount_value').val(100);
+                        discountedPrice = 0;
+                    } else {
+                        discountedPrice = price - (price * (discountValue / 100));
+                    }
+                } else { // fixed
+                    if (discountValue > price) {
+                        $('#discount_value').val(price);
+                        // discountedPrice = 0;
+                    } else {
+                        discountedPrice = price - discountValue;
+                    }
+                }
+                
+                $('#discounted_price').val(new Intl.NumberFormat('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(discountedPrice));
+            }
+
+            // Add event listeners
+            $('#price, #discount_value').on('input', calculateDiscountedPrice);
+            $('#discount_type').on('change', calculateDiscountedPrice);
+        });
     </script>
+    <script>
+        $(document).ready(function() {
+            // Prevent negative values in price input
+            $('#price').on('input', function() {
+                let value = parseFloat($(this).val());
+                if (value < 0) {
+                    $(this).val(0);
+                }
+            });
+
+            // Handle discount value input
+            $('#discount_value').on('input', function() {
+                let value = parseFloat($(this).val());
+                if (value < 0) {
+                    $(this).val(0);
+                }
+                calculateDiscountedPrice();
+            });
+
+            // Calculate discounted price function
+            function calculateDiscountedPrice() {
+                const price = parseFloat($('#price').val()) || 0;
+                const discountValue = parseFloat($('#discount_value').val()) || 0;
+                const discountType = $('input[name="discount_type"]:checked').val();
+                
+                let discountedPrice = price;
+                
+                if (discountType === 'percentage') {
+                    // For percentage discount
+                    const maxPercentage = 100;
+                    const validDiscount = Math.min(discountValue, maxPercentage);
+                    discountedPrice = price - (price * (validDiscount / 100));
+                    
+                    if (discountValue > maxPercentage) {
+                        $('#discount_value').val(maxPercentage);
+                    }
+                } else {
+                    // For fixed discount
+                    const maxFixed = price;
+                    const validDiscount = Math.min(discountValue, maxFixed);
+                    discountedPrice = price - validDiscount;
+                }
+                
+                // Ensure discounted price is never negative
+                discountedPrice = Math.max(0, discountedPrice);
+                
+                // Format and display the discounted price
+                $('#discounted_price').val(new Intl.NumberFormat('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(discountedPrice));
+            }
+
+            // Add event listeners
+            $('#price').on('input', calculateDiscountedPrice);
+            $('#discount_value').on('input', calculateDiscountedPrice);
+            $('input[name="discount_type"]').on('change', calculateDiscountedPrice);
+
+            // Handle discount toggle
+            $('#has_discount').change(function() {
+                $('#discount-fields').toggleClass('d-none', !this.checked);
+                if (!this.checked) {
+                    $('#discount_value').val('');
+                    $('#discounted_price').val('');
+                } else {
+                    calculateDiscountedPrice();
+                }
+            });
+
+            // Initial calculation if discount is enabled
+            if ($('#has_discount').is(':checked')) {
+                calculateDiscountedPrice();
+            }
+        });
+    </script>
+
+
 
 @endpush

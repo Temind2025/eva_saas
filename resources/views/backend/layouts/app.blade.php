@@ -11,8 +11,9 @@
     <meta name="description" content="{{ setting('meta_description') }}">
     <meta name="setting_options" content="{{ setting('customization_json') }}">
     <!-- Shortcut Icon -->
-    <link rel="shortcut icon" href="{{ asset(setting('favicon')) }}">
-    <link rel="icon" type="image/ico" href="{{ asset(setting('favicon')) }}" />
+    <link rel="shortcut icon" href="{{ asset(setting('favicon') ?? 'images/logo/mini_logo.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset(setting('favicon') ?? 'images/logo/mini_logo.png') }}">
+
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">

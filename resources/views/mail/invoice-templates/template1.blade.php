@@ -6,9 +6,12 @@
   <title>{{ __('messages.invoice') }}</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+        font-family: Arial, sans-serif;
     }
 
+    .currency-font {
+      font-family: 'DejaVu Sans', sans-serif;
+    }
     h1, h2, h3, h4, h5, h6 {
       color: #000000;
     }
@@ -152,8 +155,8 @@
           <tr>
             <td>{{$value['service_name']}}</td>
             <td>1</td>
-            <td class="text-end">{{ \Currency::format($value['service_price']) }}</td>
-            <td class="text-end">{{ \Currency::format($value['service_price']) }}</td>
+            <td class="text-end currency-font">{{ \Currency::format($value['service_price']) }}</td>
+            <td class="text-end currency-font">{{ \Currency::format($value['service_price']) }}</td>
           </tr>
         @endforeach
         @foreach($data['extra']['products'] as $key => $value)
@@ -164,41 +167,41 @@
               $price = $value['discounted_price'] != $value['product_price'] ? $value['discounted_price'] : $value['product_price'];
               // $productPrice += $price * $value['product_qty'];
             @endphp
-            <td class="text-end">{{ \Currency::format($price) }}</td>
-            <td class="text-end">{{ \Currency::format($price * $value['product_qty']) }}</td>
+            <td class="text-end currency-font">{{ \Currency::format($price) }}</td>
+            <td class="text-end currency-font">{{ \Currency::format($price * $value['product_qty']) }}</td>
           </tr>
         @endforeach
         @foreach($data['extra']['packages'] as $key => $value)
           <tr>
             <td>{{$value['name']}}</td>
             <td>1</td>
-            <td class="text-end">{{ \Currency::format($value['package_price']) }}</td>
-            <td class="text-end">{{ \Currency::format($value['package_price']) }}</td>
+            <td class="text-end currency-font">{{ \Currency::format($value['package_price']) }}</td>
+            <td class="text-end currency-font">{{ \Currency::format($value['package_price']) }}</td>
           </tr>
         @endforeach
       </tbody>
       <tfoot>
         <tr>
           <td colspan="3" class="text-end"><strong>{{ __('messages.sub_total') }}:</strong></td>
-          <td class="text-end">{{ \Currency::format($data['serviceAmount'] + $data['product_price'] + $data['package_price']) }}</td>
+          <td class="text-end currency-font">{{ \Currency::format($data['serviceAmount'] + $data['product_price'] + $data['package_price']) }}</td>
         </tr>
         <tr>
           <td colspan="3" class="text-end"><strong>{{ __('messages.tips') }}:</strong></td>
-          <td class="text-end">{{ \Currency::format($data['tip_amount']) }}</td>
+          <td class="text-end currency-font">{{ \Currency::format($data['tip_amount']) }}</td>
         </tr>
         <tr>
           <td colspan="3" class="text-end"><strong>{{ __('messages.tax') }}:</strong></td>
-          <td class="text-end">{{ \Currency::format($data['tax_amount']) }}</td>
+          <td class="text-end currency-font">{{ \Currency::format($data['tax_amount']) }}</td>
         </tr>
         @if($data['coupon_discount'])
         <tr>
           <td colspan="3" class="text-end"><strong>{{ __('messages.coupon_discount') }}:</strong></td>
-          <td class="text-end">{{ \Currency::format($data['coupon_discount']) }}</td>
+          <td class="text-end currency-font">{{ \Currency::format($data['coupon_discount']) }}</td>
         </tr>
         @endif
         <tr>
           <td colspan="3" class="text-end"><strong>{{ __('messages.grand_total') }}:</strong></td>
-          <td class="text-end">{{ \Currency::format($data['grand_total']) }}</td>
+          <td class="text-end currency-font">{{ \Currency::format($data['grand_total']) }}</td>
         </tr>
       </tfoot>
     </table>

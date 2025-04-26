@@ -82,6 +82,10 @@ class PaymentController extends Controller
                 $q->orWhereHas('user', function ($subQuery) use ($search) {
                     $subQuery->where('last_name', 'like', "%{$search}%");
                 });
+
+                $q->orWhere('amount', 'like', "%{$search}%");
+
+                $q->orWhereDate('payment_date', 'like', "%{$search}%");
             });
         }
 
@@ -126,13 +130,56 @@ class PaymentController extends Controller
                     $q->where('name', 'like', "%{$keyword}%");
                 });
             })
-            ->orderColumn('plan_name', function ($query, $order) {
-                $query->join('plan', 'plan.id', '=', 'payments.plan_id')
-                      ->orderBy('plan.name', $order);
+           
+            ->editColumn('duration', function ($data) {
+            
+                $durationSuffix = match($data->plan->type ?? '') {
+                    'Monthly' => 'Month',
+                    'Yearly' => 'Year',
+                    'Weekly' => 'Week',
+                    default => 'Day'
+                };
+            
+                return ($data->plan->duration ?? 0) . ' ' . $durationSuffix;
+            })
+            ->filterColumn('duration', function ($query, $keyword) {
+                $query->whereHas('plan', function ($q) use ($keyword) {
+                    $q->whereRaw("CONCAT(duration, ' ', 
+                        CASE type 
+                            WHEN 'Monthly' THEN 'Month'
+                            WHEN 'Yearly' THEN 'Year'
+                            WHEN 'Weekly' THEN 'Week'
+                            ELSE 'Day'
+                        END
+                    ) LIKE ?", ["%{$keyword}%"]);
+                });
+            })
+            
+            ->orderColumn('duration', function ($query, $order) {
+                $query->select('payments.*')
+                    ->leftJoin('plan', 'plan.id', '=', 'payments.plan_id')
+                    ->groupBy([
+                        'payments.id',
+                        'payments.user_id',
+                        'payments.plan_id',
+                        'payments.amount',
+                        'payments.currency',
+                        'payments.payment_method',
+                        'payments.payment_date',
+                        'payments.status'
+                    ])
+                    ->orderByRaw("CAST(COALESCE(plan.duration, 0) AS UNSIGNED) $order");
             })
 
             ->editColumn('status', function ($data) {
                 return $data->status == 0 ? 'Pending' : ($data->status == 1 ? 'Approved' : 'Rejected');
+            })
+
+            ->orderColumn('plan_name', function ($query, $order) {
+                $query->select('payments.*')
+                    ->leftJoin('plan', 'plan.id', '=', 'payments.plan_id')
+                    ->groupBy('payments.id')  // Add grouping by primary key
+                    ->orderBy('plan.name', $order);
             })
             ->rawColumns(['action', 'status','check'])
             ->orderColumns(['id'], '-:column $1')
@@ -142,6 +189,7 @@ class PaymentController extends Controller
 
     public function create()
     {
+        // dd('create payment');
         $module_action = __('messages.create_payment');
         $plans = Plan::where('status',1)->where('is_free_plan',0)->get();
         $users = User::role('admin')->where('status',1)->get();
@@ -238,7 +286,7 @@ public function approve(Request $request)
         $subscription = new Subscription;
         $subscription->plan_id = $payment->plan_id;
         $subscription->user_id = $payment->user_id;
-        $subscription->amount = $plan->price;
+        $subscription->amount = $plan->has_discount ? $plan->discounted_price : $plan->price;
         $subscription->total_amount = $payment->amount;
         $subscription->tax_amount = $plan->tax;
         $subscription->payment_method = $payment->payment_method ?? 'cash';

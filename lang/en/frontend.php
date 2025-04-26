@@ -119,7 +119,7 @@ return [
     'create_payment' => 'Create Payment',
     'edit_payment' => 'Edit Payment',
     'user' => 'User',
-    'select_user' => 'Select Admin',
+    'select_user' => 'Select Vendor',
     'plans' => 'Plans',
     'select_plan' => 'Select plan',
     'amount' => 'Amount',
@@ -239,6 +239,17 @@ return [
     'URL_frontend'=>'URL Frontend',
     'frontend'=>'Frontend',
     'created_at:'=>'Created at',
-   
+    'enable_discount'=>'Enable Discount',
+    'discount_value'=>'Discount Value',
+    'discount_type'=>'Discount Type',
+    'discounted_price'=>'Discounted Price',
+    'enable_discount_help'=>'Enable Discount',
+    'total_subscriptions' => 'Total Subscriptions',
+    'expired_date' => 'Expiry Date',
+    'off' => 'off',
+    'total_subscriptions_tooltip' => 'Total subscriptions',
+    'pending' => 'Pending',
+    'cancelled' => 'Cancelled',
+    'vendor_name' => 'Vendor Name',
 ];
 

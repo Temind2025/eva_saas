@@ -785,6 +785,7 @@ class BookingsController extends Controller
 
     public function booking_payment(Request $request, Booking $booking_id)
     {
+        
         $data = $request->all();
 
         $booking_id = $booking_id['id'];

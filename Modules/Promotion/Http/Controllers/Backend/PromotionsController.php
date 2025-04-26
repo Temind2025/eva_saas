@@ -117,7 +117,7 @@ class PromotionsController extends Controller
         $module_name = $this->module_name;
         $query = Promotion::query()->with(['coupon']);
         
-            $query =  $query->where('created_by', auth()->id());
+        $query =  $query->where('promotions.created_by', auth()->id());
 
        
 

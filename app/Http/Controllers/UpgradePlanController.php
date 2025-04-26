@@ -115,6 +115,7 @@ class upgradePlanController extends Controller
 
     public function pricingPlan(Request $request)
     {
+        
         $selected_plan=$request->id;
         $module_title = __('frontend.pricing_plan');
         $activeSubscriptions = Subscription::where('user_id', auth()->id())
@@ -122,6 +123,7 @@ class upgradePlanController extends Controller
             ->where('end_date', '>', now())
             ->orderBy('id', 'desc')
             ->pluck('plan_id');
+
 
         $data['plan'] = Plan::with('features')
             ->get();
@@ -139,6 +141,30 @@ class upgradePlanController extends Controller
 
         if (isset($data['plan_details']['price'])) {
             $basePrice = $data['plan_details']['price'];
+            if ($data['plan_details']->has_discount) {
+                $discountAmount = 0;
+                
+                if ($data['plan_details']->discount_type === 'percentage') {
+                    $discountAmount = ($basePrice * $data['plan_details']->discount_value) / 100;
+                } else { // fixed
+                    $discountAmount = $data['plan_details']->discount_value;
+                }
+                
+                // Ensure discount doesn't exceed price
+                $discountAmount = min($discountAmount, $basePrice);
+                $discountedPrice = $basePrice - $discountAmount;
+                
+                $data['discount_details'] = [
+                    'has_discount' => true,
+                    'discount_type' => $data['plan_details']->discount_type,
+                    'discount_value' => $data['plan_details']->discount_value,
+                    'discount_amount' => $discountAmount,
+                    'discounted_price' => $discountedPrice
+                ];
+                
+                // Use discounted price for tax calculations
+                $basePrice = $discountedPrice;
+            }
         } else {
             $basePrice = 0; // Default value if 'price' is not set
         }
@@ -651,20 +677,21 @@ class upgradePlanController extends Controller
 
         }
 
+        // Calculate base amount considering discounted price if available
+        $base_amount = $plan->has_discount == 1 ? $plan->discounted_price : $plan->price;
+        $base_amount = $base_amount - $discount_amount; // Apply any additional coupon discount
 
+        // Calculate tax on the discounted amount
         $totalTax = 0;
-
-        $base_amount=$plan->price- $discount_amount;
-
         foreach ($taxes as $tax) {
             if (strtolower($tax->type) == 'fixed') {
                 $totalTax += $tax->value;
             } elseif (strtolower($tax->type) == 'percentage') {
-                $totalTax += ( $base_amount * $tax->value) / 100;
+                $totalTax += ($base_amount * $tax->value) / 100;
             }
         }
 
-        $amount=$base_amount+$totalTax;
+        $amount = $base_amount + $totalTax;
 
 
 
@@ -675,7 +702,7 @@ class upgradePlanController extends Controller
                 'start_date' => now(),
                 'end_date' => $end_date,
                 'status' => 'active',
-                'amount' =>$plan->price,
+                'amount' => $plan->has_discount == 1 ? $plan->discounted_price : $plan->price,
                 'tax_amount' => $totalTax ,
                 'discount_amount'=>$discount_amount,
                 'total_amount' => $amount,

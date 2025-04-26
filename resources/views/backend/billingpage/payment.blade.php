@@ -19,7 +19,7 @@
 
                     @if($plan->price>0)
                     <div class="subs-plan">
-                        <label for="essential" class="pricing-tab border-0 rounded-3 d-flex justify-content-between">
+                        <label for="plan-{{$plan->id}}" class="pricing-tab border-0 rounded-3 d-flex justify-content-between">
                             <div>
                                 <div class="d-flex align-items-center gap-1">
                                     <h5 class="text-primary mb-0">{{ \Currency::formatSuperadmin($plan->price ?? 0) }}</h5>
@@ -162,11 +162,35 @@
                         <div class="payment-details-card border-0 rounded-2">
                             <h5 class="payment-details-heading pb-1 mb-3 font-size-18">{{ __('frontend.payment_details') }}</h5>
                             <div>
+                                <!-- Original Price -->
                                 <div class="d-flex justify-content-between mb-2">
                                     <span>{{ __('frontend.price') }}</span>
-                                    <h6 class="font-size-18 mb-0" id="price">{{ \Currency::formatSuperadmin($data['plan_details']['price'] ?? 0) }}</h6>
+                                    <h6 class="font-size-18 mb-0" id="price">
+                                        {{ \Currency::formatSuperadmin($data['plan_details']['price'] ?? 0) }}
+                                    </h6>
                                 </div>
 
+                                <!-- Plan Discount -->
+                                @if(isset($data['plan_details']['has_discount']) && $data['plan_details']['has_discount'])
+                                <div class="d-flex justify-content-between mb-2" id="plan_discount_section">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span>{{__('messages.plan_discount')}}</span>
+                                        <span class="text-success" id="discount_type_label">
+                                            ({{ $data['plan_details']['discount_type'] == 'percentage' ? 
+                                                $data['plan_details']['discount_value'] . '%' : 
+                                                \Currency::formatSuperadmin($data['plan_details']['discount_value']) 
+                                            }})
+                                        </span>
+                                    </div>
+                                    <h6 class="font-size-18 text-success mb-0" id="plan_discount_amount">
+                                        - {{ \Currency::formatSuperadmin($data['plan_details']['price'] - $data['plan_details']['discounted_price']) }}
+                                    </h6>
+                                </div>
+                                @endif
+
+
+
+                                <!-- Coupon Discount -->
                                 <div class="d-flex justify-content-between mb-2 d-none" id="discount_section">
                                     <div class="d-flex align-items-center gap-2">
                                         <span>{{ __('frontend.coupon') }}</span>
@@ -175,52 +199,38 @@
                                     <h6 class="font-size-18 text-success mb-0" id="discount_amount"></h6>
                                 </div>
 
-                                <!-- Subtotal Section (this will be dynamically updated) -->
+                                <!-- Subtotal after all discounts -->
                                 <div class="d-flex justify-content-between mb-2" id="subtotal_section">
                                     <span>{{ __('frontend.subtotal') }}</span>
-                                    <h6 class="font-size-18 mb-0" id="subtotal_price">{{ \Currency::formatSuperadmin($data['plan_details']['price'] ?? 0) }}</h6>
+                                    <h6 class="font-size-18 mb-0" id="subtotal_price"></h6>
                                 </div>
 
-                                @if($data['total_tax']>0)
-
-                                <div class="d-flex justify-content-between align-items-center mb-2 tax-box" href="#collapseTaxes" data-bs-toggle="collapse" aria-expanded="true">
-                                    <span class="h6 fw-normal text-body mb-0">{{ __('frontend.tax') }} </span>
+                                <!-- Tax Section -->
+                                @if($data['total_tax'] > 0)
+                                <div class="d-flex justify-content-between align-items-center mb-2 tax-box" 
+                                     href="#collapseTaxes" data-bs-toggle="collapse" aria-expanded="true">
+                                    <span class="h6 fw-normal text-body mb-0">{{ __('frontend.tax') }}</span>
                                     <div class="d-flex align-items-center gap-2">
                                         <i class="ph ph-caret-up"></i>
-                                        <span class="h6 font-size-18 text-danger mb-0" id="total_tax">+ {{\Currency::formatSuperadmin($data['total_tax'])}}</span>
+                                        <span class="h6 font-size-18 text-danger mb-0" id="total_tax">
+                                            + {{ \Currency::formatSuperadmin($data['total_tax']) }}
+                                        </span>
                                     </div>
-
                                 </div>
 
-
-                                    <div id="collapseTaxes" class="collapse show" style="" id="applied_tax">
-                                        <div class="applied-taxes-card p-3 mb-5 rounded">
-                                            <h6 class="mb-3">{{ __('frontend.applied_taxes') }}</h6>
-                                            <div>
-
-                                                @foreach ($data['tax_details'] as $taxes)
-
-                                                <div class="d-flex justify-content-between gap-3align-items-center mb-2">
-                                                        @if($taxes['type'] == 'Percentage')
-                                                            <span class="font-size-14">{{ $taxes['title'] }} ({{ $taxes['value'] }} %)</span>
-
-                                                            @else
-
-                                                            <span class="font-size-14">{{ $taxes['title'] }}({{ \Currency::formatSuperadmin($taxes['value']) }})</span>
-                                                        @endif
-                                                        <h6 class="mb-0">{{ \Currency::formatSuperadmin($taxes['amount']) }}</h6>
-                                                    </div>
-
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div id="collapseTaxes" class="collapse show">
+                                    <!-- Tax details will be populated here -->
+                                </div>
                                 @endif
 
-                            <h6 class="d-flex align-items-center justify-content-between mb-0">
-                                <span>{{ __('frontend.total_payment') }}</span>
-                                <span class="text-primary fs-5" id="total_amount">{{ \Currency::formatSuperadmin($data['total_amount']) }}</span>
-                            </h6>
+                                <!-- Total Amount -->
+                                <h6 class="d-flex align-items-center justify-content-between mb-0">
+                                    <span>{{ __('frontend.total_payment') }}</span>
+                                    <span class="text-primary fs-5" id="total_amount">
+                                        {{ \Currency::formatSuperadmin($data['total_amount']) }}
+                                    </span>
+                                </h6>
+                            </div>
                         </div>
                     </div>
 
@@ -430,6 +440,24 @@ function fetchPaymentDetails(planId) {
             $('#promotional_id').html(promotionalHtml);
             $('#all-coupons .coupons-inner').html(modalHtml);
             $('#price').text(formatCurrencyvalue(response.plan_details.price));
+            
+            // Handle plan discount if exists
+            if (response.plan_details.has_discount) {
+                $('#plan_discount_section').removeClass('d-none');
+                const discountLabel = response.plan_details.discount_type === 'percentage' ? 
+                    `${response.plan_details.discount_value}%` : 
+                    formatCurrencyvalue(response.plan_details.discount_value);
+                
+                $('#discount_type_label').text(`(${discountLabel})`);
+                $('#plan_discount_amount').text(
+                    '- ' + formatCurrencyvalue(
+                        response.plan_details.price - response.plan_details.discounted_price
+                    )
+                );
+            } else {
+                $('#plan_discount_section').addClass('d-none');
+            }
+
             $('#total_tax').text(formatCurrencyvalue(response.total_tax));
             $('#total_amount').text(formatCurrencyvalue(response.total_amount));
             $('#selected-plan-id').val(planId);
@@ -448,23 +476,45 @@ function fetchPaymentDetails(planId) {
 
 // Function to remove currency symbol
 function stripCurrencySymbol(value) {
-    return parseFloat(value.toString().replace(/[^0-9.]/g, '')); // Remove non-numeric characters
+    if (!value) return 0;
+    // Remove currency symbol, commas, and any non-numeric characters except decimal point
+    const numericValue = value.toString().replace(/[^0-9.-]/g, '');
+    return parseFloat(numericValue) || 0;
 }
 
 function formatCurrencyvalue(value){
-           if (window.formatSuperadmin !== undefined) {
-             return window.formatSuperadmin(value)
-           }
-           return value
-        }
+    // Ensure value is a number
+    value = parseFloat(value) || 0;
+    
+    if (window.formatSuperadmin !== undefined) {
+        return window.formatSuperadmin(value);
+    }
+    return value.toFixed(2); // Fallback to 2 decimal places if formatSuperadmin is not available
+}
 
-        $(document).ready(function () {
+$(document).ready(function () {
     // Use event delegation for dynamically added elements
     $(document).on('change', '.coupon-radio', function () {
         if ($(this).is(":checked")) {
-            // Get selected coupon ID and plan ID
             const couponId = $(this).val();
             const planId = $('#selected-plan-id').val();
+            
+            // Get the correct base price
+            const hasPlanDiscount = $('#plan_discount_section').length > 0;
+            let basePrice;
+            
+            if (hasPlanDiscount) {
+                // If plan has discount, use the discounted price
+                const originalPrice = stripCurrencySymbol($('#price').text()) || 0;
+                const planDiscountAmount = stripCurrencySymbol($('#plan_discount_amount').text().replace('-', '')) || 0;
+                basePrice = originalPrice - planDiscountAmount;
+            } else {
+                // If no plan discount, use original price
+                basePrice = stripCurrencySymbol($('#price').text()) || 0;
+            }
+
+            // Ensure basePrice is a valid number
+            basePrice = parseFloat(basePrice) || 0;
 
             $('#loader').show();
 
@@ -476,96 +526,125 @@ function formatCurrencyvalue(value){
                 },
                 data: {
                     coupon_id: couponId,
-                    plan_id: planId
+                    plan_id: planId,
+                    base_price: basePrice,
+                    has_plan_discount: hasPlanDiscount
                 },
                 success: function (response) {
-                    const originalPrice = parseFloat($('#price').text().replace(/[^0-9.-]+/g, ""));
-                    const discountAmount = response.discount_amount || 0;
-                    const subtotal = originalPrice - discountAmount;
+                    // Show discount sections
+                    $('#discount_section').removeClass('d-none');
+                    $('#subtotal_section').removeClass('d-none');
 
-                    // Update Subtotal price
-                    $('#subtotal_price').text(formatCurrencyvalue(subtotal));
+                    // Calculate subtotal first
+                    const couponDiscount = parseFloat(response.discount_amount) || 0;
+                    const subtotalAfterDiscounts = Math.max(0, basePrice - couponDiscount);
 
+                    // Update subtotal display
+                    $('#subtotal_price').text(formatCurrencyvalue(subtotalAfterDiscounts));
+                    $('#discount_amount').text('- ' + formatCurrencyvalue(couponDiscount));
+                    $('#cupon_code').text('(' + response.coupon_code + ')');
+
+                    // Calculate taxes based on subtotal
+                    let totalTaxAmount = 0;
                     if (response.tax_details && response.tax_details.length > 0) {
-                        var taxHtml = `
-                            <div class="applied-taxes-card p-3 mb-5 rounded">
-                                <h6 class="mb-3">{{ __('messages.applied_taxes') }}</h6>
-                                <div>
-                        `;
-                        $.each(response.tax_details, function(index, tax) {
-                            taxHtml += `
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="font-size-14">${tax.title} (${tax.type === 'Percentage' ? tax.value + '%' : formatCurrencyvalue(tax.value)})</span>
-                                    <h6 class="mb-0">${formatCurrencyvalue(tax.amount)}</h6>
-                                </div>
-                            `;
+                        const updatedTaxDetails = response.tax_details.map(tax => {
+                            let taxAmount;
+                            if (tax.type === 'Percentage') {
+                                // Calculate percentage tax based on subtotal
+                                taxAmount = (subtotalAfterDiscounts * parseFloat(tax.value)) / 100;
+                            } else {
+                                // Fixed tax remains constant
+                                taxAmount = parseFloat(tax.value);
+                            }
+                            totalTaxAmount += taxAmount;
+                            return {
+                                ...tax,
+                                amount: taxAmount
+                            };
                         });
-                        taxHtml += `</div></div>`;
-                        $('#collapseTaxes').html(taxHtml).collapse('show');
-                    } else {
-                        $('#collapseTaxes').html('<p class="text-muted">{{ __('messages.no_taxes_applied') }}.</p>').collapse('show');
+
+                        // Update tax details display
+                        updateTaxDetails(updatedTaxDetails);
+                        $('#total_tax').text('+ ' + formatCurrencyvalue(totalTaxAmount));
                     }
 
-                    if (response.discount_amount > 0) {
-                        $('#discount_section').removeClass('d-none');
-                        $('#subtotal_section').removeClass('d-none');
-                        $('#total_tax').text(formatCurrencyvalue(response.total_tax));
-                        $('#total_amount').text(formatCurrencyvalue(response.total_amount));
-                        $('#selected-price-id').val(response.total_amount);
-                        $('#cupon_code').text('(' + response.coupon_code + ')');
-                        $('#discount_amount').text(formatCurrencyvalue(response.discount_amount));
+                    // Calculate final total (subtotal + recalculated taxes)
+                    const finalTotal = subtotalAfterDiscounts + totalTaxAmount;
+                    $('#total_amount').text(formatCurrencyvalue(finalTotal));
+                    $('#selected-price-id').val(finalTotal);
 
-                    } else {
-                        $('#discount_section').addClass('d-none');
-                        $('#subtotal_section').addClass('d-none');
-
-                    }
-
-                    $('#promotional_id .coupons-card').each(function() {
-                        const card = $(this);
-                        const currentCouponId = card.find('.coupon-radio').val();
-                        if (currentCouponId == couponId) {
-                            card.find('.coupons-status').text('Applied');
-                        } else {
-                            card.find('.coupons-status').text('Apply');
-                        }
-                    });
-
+                    updateCouponStatus(couponId);
                     $('#loader').hide();
                 },
                 error: function (xhr, status, error) {
-                    $('#loader').hide();
-
                     console.error("Error:", error);
+                    $('#loader').hide();
+                    $(this).prop('checked', false);
+                    $('#discount_section').addClass('d-none');
+                    $('#subtotal_section').addClass('d-none');
                 }
             });
         }
     });
 });
 
-        document.getElementById('payment-form').addEventListener('submit', function (event) {
-        // Get the selected payment method
-        const paymentMethod = document.getElementById('payment-method').value;
+function updateTaxDetails(taxDetails) {
+    if (taxDetails && taxDetails.length > 0) {
+        let taxHtml = `
+            <div class="applied-taxes-card p-3 mb-5 rounded">
+                <h6 class="mb-3">{{ __('messages.applied_taxes') }}</h6>
+                <div>
+                    ${taxDetails.map(tax => `
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="font-size-14">${tax.title} (${
+                                tax.type === 'Percentage' ? 
+                                tax.value + '%' : 
+                                formatCurrencyvalue(tax.value)
+                            })</span>
+                            <h6 class="mb-0">${formatCurrencyvalue(tax.amount)}</h6>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
+        
+        $('#collapseTaxes').html(taxHtml).collapse('show');
+    } else {
+        $('#collapseTaxes').html('<p class="text-muted">{{ __("messages.no_taxes_applied") }}</p>').collapse('hide');
+    }
+}
 
-        // Check if no payment method is selected
-        if (!paymentMethod) {
-            event.preventDefault(); // Prevent form submission
-            document.getElementById('payment-method').classList.add('is-invalid'); // Highlight the field
-            document.getElementById('payment-method-error').style.display = 'block'; // Show error message
+function updateCouponStatus(selectedCouponId) {
+    $('.coupon-radio').each(function() {
+        const card = $(this).closest('.coupons-card');
+        if ($(this).val() == selectedCouponId) {
+            card.find('.coupons-status').text('Applied');
+        } else {
+            card.find('.coupons-status').text('Apply');
         }
     });
+}
 
-    // Optionally, you can clear the error when the user selects a valid option
-    document.getElementById('payment-method').addEventListener('change', function () {
-        document.getElementById('payment-method').classList.remove('is-invalid'); // Remove highlight
-        document.getElementById('payment-method-error').style.display = 'none'; // Hide error message
-    });
+document.getElementById('payment-form').addEventListener('submit', function (event) { 
+    const paymentMethod = document.getElementById('payment-method').value;
 
-    $(document).ready(function() {
+    if (!paymentMethod) {
+        event.preventDefault(); // Prevent form submission
+        document.getElementById('payment-method').classList.add('is-invalid'); 
+        document.getElementById('payment-method-error').style.display = 'block'; 
+    }
+});
+
+
+document.getElementById('payment-method').addEventListener('change', function () {
+    document.getElementById('payment-method').classList.remove('is-invalid'); 
+    document.getElementById('payment-method-error').style.display = 'none'; 
+});
+
+$(document).ready(function() {
     $('#payment-form').on('submit', function(e) {
 
         if (document.getElementById('payment-method').value !== 'razorpay') {
-            return true; // Allow normal form submission
+            return true; 
         }
 
         e.preventDefault();
@@ -617,5 +696,5 @@ function formatCurrencyvalue(value){
     });
 });
 
-    </script>
+</script>
 @endpush

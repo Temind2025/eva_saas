@@ -43,5 +43,6 @@ return [
     'lbl_tips_earn' => 'Tips Earn',
     'lbl_total_earning' => 'Total Earning',
     'order-report' => 'Order Report',
+    'all_subscription'=>'All Subscription'
 
 ];

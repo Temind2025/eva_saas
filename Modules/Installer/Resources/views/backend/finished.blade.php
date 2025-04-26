@@ -13,7 +13,7 @@
 @section('container')
 
 <h6 class="setup-title">Admin Login Credentials</h6>
-<p class="text-center">Email: <b>Superadmin@salon.com</b></p>
+<p class="text-center">Email: <b>superadmin@salon.com</b></p>
 <p class="text-center">Password: <b>12345678</b></p>
 
  <div class="setup-actions">
@@ -24,11 +24,7 @@
         </a>
     </div>
 
-    <div class="buttons">
-        <a href="{{ route('login') }}" class="button intsaller-btn" id="exit-admin-button" onclick="disableAdminButton()">
-            {{ trans('installer_messages.final.admin_panel') }}
-        </a>
-    </div>
+
 
  </div>
 

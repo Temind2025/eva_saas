@@ -187,13 +187,35 @@
         <thead class="bg-color text-black">
             <th style="padding:12px 30px; text-align: left;">{{__('messages.plan_name')}}</th>
             <th style="padding:12px 30px; text-align: right;">{{__('messages.price')}}</th>
+            <th style="padding:12px 30px; text-align: right;">{{__('messages.discount')}}</th>
             <th style="padding:12px 30px; text-align: right;">{{__('messages.amount')}}</th>
         </thead>
-        <tbody >
+        <tbody>
             <tr>
-                <td style="padding:12px 30px; text-align: left;">{{ optional($data->plan)->name ?? '-' }} - {{ optional($data->plan)->duration ?? '' }} {{ $displayType }}</td>
-                <td style="padding:12px 30px; text-align: right;">{{ \Currency::formatSuperadmin(optional($data->plan)->price ?? '-') }}</td>
-                <td style="padding:12px 30px; text-align: right;">{{ \Currency::formatSuperadmin($data->amount ?? 0)  }}</td>
+                <td style="padding:12px 30px; text-align: left;">
+                    {{ optional($data->plan)->name ?? '-' }} - {{ optional($data->plan)->duration ?? '' }} {{ $displayType }}
+                </td>
+                <td style="padding:12px 30px; text-align: right;">
+                    {{ \Currency::formatSuperadmin(optional($data->plan)->price ?? '-') }}
+                </td>
+                <td style="padding:12px 30px; text-align: right;">
+                    @if(optional($data->plan)->has_discount)
+                        @if(optional($data->plan)->discount_type === 'percentage')
+                            - {{ \Currency::formatSuperadmin((optional($data->plan)->price * optional($data->plan)->discount_value / 100)) }}
+                            ({{ optional($data->plan)->discount_value }}%)
+                        @else
+                            - {{ \Currency::formatSuperadmin(optional($data->plan)->discount_value) }}
+                        @endif
+                    @else
+                        -
+                    @endif
+                </td>
+                <td style="padding:12px 30px; text-align: right;">
+                    {{ \Currency::formatSuperadmin(optional($data->plan)->has_discount ? 
+                        optional($data->plan)->discounted_price : 
+                        optional($data->plan)->price ?? 0) 
+                    }}
+                </td>
             </tr>
         </tbody>
     </table>

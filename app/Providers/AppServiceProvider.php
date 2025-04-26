@@ -62,8 +62,8 @@ class AppServiceProvider extends ServiceProvider
 
             return $trans;
         });
-
-        if (Schema::hasTable('settings')) {
+        $dbConnectionStatus =dbConnectionStatus();
+        if ($dbConnectionStatus && Schema::hasTable('settings') && file_exists(storage_path('installed')) ) {
             $timezone = Cache::rememberForever('settings.default_time_zone', function () {
                 return DB::table('settings')->where('name', 'default_time_zone')->value('val') ?? 'UTC';
             });

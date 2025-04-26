@@ -78,12 +78,14 @@ class Plan extends BaseModel
     public function calculateTotalTax()
     {
         $totalTax = 0;
+        // Determine the base price for tax calculation
+        $basePrice = $this->has_discount ? $this->discounted_price : $this->price;
 
         foreach ($this->taxes() as $tax) {
             if ($tax->type === 'Fixed') {
                 $totalTax += $tax->value; // Add fixed tax value
             } elseif ($tax->type === 'Percentage') {
-                $totalTax += ($tax->value / 100) * $this->price; // Calculate percentage tax
+                $totalTax += ($tax->value / 100) * $basePrice; // Calculate percentage tax on discounted price if applicable
             }
         }
 
@@ -93,7 +95,8 @@ class Plan extends BaseModel
     public function totalPrice()
     {
         $totalTax = $this->calculateTotalTax();
-        return $this->price + $totalTax; // Add plan price and total tax
+        $basePrice = $this->has_discount ? $this->discounted_price : $this->price;
+        return $basePrice + $totalTax;
     }
 
 
@@ -172,6 +175,9 @@ public function givePermissionToUser($user_id)
         return $this->belongsTo(Plan::class, 'plan_id');
     }
 
-
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
 
 }

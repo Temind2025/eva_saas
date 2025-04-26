@@ -96,12 +96,13 @@ class PlanController extends Controller
 
     public function index_data(Datatables $datatable, Request $request)
     {
-        $query = Plan::query();
+        // dd('hello');
+        $query = Plan::query()
+            ->withCount('subscriptions');  // Add this line to count subscriptions
 
         $query = auth()->user()->hasRole('super admin')
-            ? Plan::query()
-            : Plan::where('status', 1)->where('is_free_plan',0);
-
+            ? $query
+            : $query->where('status', 1)->where('is_free_plan', 0);
 
         $filter = $request->filter;
 
@@ -121,11 +122,24 @@ class PlanController extends Controller
             ->editColumn('price', function ($data) {
                 return amountWithCurrencySymbol($data->price, defaultCurrency());
             })
+            ->editColumn('discount_value', function ($data) {
+                if ($data->has_discount) {
+                    if ($data->discount_type === 'percentage') {
+                        return $data->discount_value . '%';
+                    } else {
+                        return amountWithCurrencySymbol($data->discount_value, defaultCurrency());
+                    }
+                }
+                return '-';
+            })
             ->editColumn('tax', function ($data) {
                 return amountWithCurrencySymbol($data->tax, defaultCurrency());
             })
             ->editColumn('total_price', function ($data) {
-                return amountWithCurrencySymbol($data->total_price, defaultCurrency());
+                $basePrice = $data->has_discount ? $data->discounted_price : $data->price;
+                $totalPrice = $basePrice + $data->tax;
+                // dd($totalPrice);
+                return amountWithCurrencySymbol(number_format($totalPrice ,2), defaultCurrency());
             })
             ->editColumn('status', function ($row) {
                 $checked = '';
@@ -148,12 +162,20 @@ class PlanController extends Controller
                     return $data->updated_at->isoFormat('llll');
                 }
             })
+            ->addColumn('subscription_count', function ($data) {
+                $count = $data->subscriptions_count ?? 0;
+                if ($count > 0) {
+                    $url = route('backend.subscriptions.all_subscription', ['plan_id' => $data->id]);
+                    return '<a href="'.$url.'" class="text-primary">'.$count.'</a>';
+                }
+                return '<span>'.$count.'</span>';
+            })
             ->orderColumns(['id'], '-:column $1');
 
         // Custom Fields For export
         $customFieldColumns = CustomField::customFieldData($datatable, Plan::CUSTOM_FIELD_MODEL, null);
 
-        return $datatable->rawColumns(array_merge(['action', 'status', 'check'], $customFieldColumns))
+        return $datatable->rawColumns(array_merge(['action', 'status', 'check', 'subscription_count'], $customFieldColumns))
             ->toJson();
     }
 
@@ -218,6 +240,7 @@ class PlanController extends Controller
 
     public function create()
     {
+        // dd('hello');
         $user = auth()->user();
         $excludedTitles = ['sidebar.main', 'sidebar.company', 'sidebar.users', 'sidebar.finance', 'sidebar.reports', 'sidebar.system', 'Plans', 'Payments', 'Subscriptions','sidebar.plans','sidebar.payments','sidebar.shop','sidebar.subscriptions'];
 
@@ -232,6 +255,7 @@ class PlanController extends Controller
         $data['freeplan'] = $freeplan;
         $data['module_action'] = 'List';
         $data['module_name'] = $this->module_name;
+        $data['module_title'] = __('messages.plans');
         $data['features'] = [];
         $data['menus'] = $menus;
 
@@ -302,6 +326,32 @@ class PlanController extends Controller
 
             // Assign user-selected permissions for paid plans
             $selectedPermissionIds = $request->permission_ids;
+
+            // Add discount handling
+            $plan->has_discount = $request->has_discount ? 1 : 0;
+            
+            if ($request->has_discount) {
+                $plan->discount_type = $request->discount_type;
+                $plan->discount_value = $request->discount_value;
+                
+                // Calculate discounted price
+                if ($request->discount_type === 'percentage') {
+                    $discountAmount = ($request->price * $request->discount_value) / 100;
+                    $plan->discounted_price = $request->price - $discountAmount;
+                } else { // fixed
+                    $plan->discounted_price = $request->price - $request->discount_value;
+                }
+                
+                // Ensure discounted price is not negative
+                $plan->discounted_price = max(0, $plan->discounted_price);
+            } else {
+                // Reset discount fields if discount is disabled
+                $plan->discount_type = null;
+                $plan->discount_value = null;
+                $plan->discounted_price = null;
+            }
+            
+            $plan->price = $request->price ?? 0;
         }
 
 
@@ -330,7 +380,6 @@ class PlanController extends Controller
 
         $plan->name = $plan_name;
         $plan->identifier=Str::slug($plan_name,'_');
-        $plan->price = $request->price ?? 0;
         $plan->permission_ids = json_encode($allPermissions);
         $plan->currency = defaultCurrency();
         $plan->description = $request->description;
@@ -352,8 +401,16 @@ class PlanController extends Controller
             }
         }
 
-        $plan->tax = $plan->calculateTotalTax() > 0 ? $plan->calculateTotalTax() : 0;
-        $plan->total_price = $plan->totalPrice() > 0 ? $plan->totalPrice() : 0;
+        // Update tax and total price calculations to consider discount
+        $plan->tax = $plan->calculateTotalTax();
+        
+        // Modify total price calculation to use discounted price when applicable
+        if ($plan->has_discount && $plan->discounted_price) {
+            $plan->total_price = $plan->discounted_price + $plan->tax;
+        } else {
+            $plan->total_price = $plan->price + $plan->tax;
+        }
+        
         $plan->save();
 
         return redirect(route('backend.subscription.plans.index'))->with('success',($request->id) ? __('messages.lbl_plan') . ' ' . __('messages.updated_successfully') : __('messages.lbl_plan') . ' ' . __('messages.added_successfully'));
@@ -381,6 +438,7 @@ class PlanController extends Controller
         $data['module_name'] = $this->module_name;
         $data['menus'] = $menus;
         $data['plan'] = $plan;
+        $data['module_title'] = __('messages.plans');
         if ($plan->identifier === 'free') {
             $data['freeplan'] = null; // Replace 'some_value' with what you want
         } else {

@@ -18,10 +18,30 @@
                                     <div class="d-flex align-items-center mb-3">
                                         <h4 class="text-primary mb-0">{{ \Currency::formatSuperadmin($plan->price ?? 0) }} </h4>
                                         <span class="mx-1">/</span>
-                                        <span>{{ $plan->duration.' '.$plan->type ?? '-' }}</span>
+                                        @php
+                                            if($plan->duration == 1 && $plan->type == 'Monthly'){
+                                                $plantype = 'Month';
+                                            } elseif ($plan->duration > 1 && $plan->type == 'Monthly') {
+                                                $plantype = 'Months';
+                                            } elseif ($plan->duration == 1 && $plan->type == 'Yearly') {
+                                                $plantype = 'Year';
+                                            } elseif ($plan->duration > 1 && $plan->type == 'Yearly') {
+                                                $plantype = 'Years';
+                                            }
+                                        @endphp
+                                        <span>{{ $plan->duration.' '.$plantype ?? '-' }}</span>
                                     </div>
                                     <div class="d-flex mb-2 align-items-center gap-3">
                                         <h6 class="m-0 font-size-18">{{ $plan->name ?? '-'}}</h6>
+
+                                        @if($plan->has_discount == 1 && $plan->discounted_price != null)
+                                            <span class="mx-1">
+                                                {{ \Currency::formatSuperadmin($plan->discount_value ?? 0) }}
+                                                @if($plan->discount_type === 'percentage')
+                                                    %
+                                                @endif
+                                            OFF</span>
+                                        @endif
 
                                     </div>
 
@@ -117,7 +137,18 @@
                                     <div class="d-flex align-items-center mb-3">
                                         <h4 class="text-primary mb-0">{{ \Currency::formatSuperadmin($plan->price ?? 0) }} </h4>
                                         <span class="mx-1">/</span>
-                                        <span>{{ $plan->duration.' '.$plan->type ?? '-' }}</span>
+                                        @php
+                                            if($plan->duration == 1 && $plan->type == 'Monthly'){
+                                                $plantype = 'Month';
+                                            } elseif ($plan->duration > 1 && $plan->type == 'Monthly') {
+                                                $plantype = 'Months';
+                                            } elseif ($plan->duration == 1 && $plan->type == 'Yearly') {
+                                                $plantype = 'Year';
+                                            } elseif ($plan->duration > 1 && $plan->type == 'Yearly') {
+                                                $plantype = 'Years';
+                                            }
+                                        @endphp
+                                        <span>{{ $plan->duration.' '.$plantype ?? '-' }}</span>
                                     </div>
                                     <div class="d-flex mb-2 align-items-center gap-3">
                                         <h6 class="m-0 font-size-18">{{ $plan->name ?? '-'}}</h6>

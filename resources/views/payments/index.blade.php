@@ -136,6 +136,11 @@
                 title: "{{ __('messages.lbl_plan') }}"
             },
             {
+                    data: 'duration',
+                    name: 'duration',
+                    title: "{{ __('frontend.duration') }}"
+            },
+            {
                 data: 'amount',
                 name: 'amount',
                 title: "{{ __('messages.lbl_amount') }}"
@@ -145,16 +150,9 @@
                 name: 'payment_date',
                 title: "{{ __('messages.lbl_date') }}"
             },
+            
 
         ];
-
-        if (module_name != 'payment') {
-        columns.push({
-            data: 'duration',
-            name: 'duration',
-            title: "{{ __('frontend.duration') }}"
-            });
-        }
 
         const actionColumn = [{
             data: 'action',
@@ -164,7 +162,7 @@
             title: "{{ __('messages.lbl_action') }}",
             render: function(data, type, row) {
                 let buttons = ''; // Ensure buttons is defined
-
+console.log(row);
                 if (row.status !== 'Approved') {
                     buttons += `
                 <button class="btn btn-primary btn-sm btn-edit" onclick="editPayment(${row.id})" title="{{ __('messages.edit') }}" data-bs-toggle="tooltip">
@@ -177,13 +175,15 @@
                     {{ __('messages.approve') }}
                 </button>
             `;
+            
                 }
-
+                console.log(buttons);
                 return buttons;
             }
         }];
         let finalColumns = [...columns];
         if (module_name === 'payment') {
+         
             finalColumns = [...columns, ...actionColumn]; // Include action column if module_name is 'payment'
         }
 
@@ -255,7 +255,11 @@
             $('#plan-filter').val('').trigger('change'); // Reset Select2 dropdown
             $('input[name="date_range"]').val(''); // Clear the date range input
             $('input[name="search"]').val('');
+            let fp = $('#date_range').get(0)._flatpickr; // Get Flatpickr instance
 
+            if (fp) {
+                fp.clear(); // Clear selection properly
+            }
             // Optionally, you can also pass the filter data if needed:
             $('#datatable').DataTable().settings()[0].ajax.data = {
                 plan_id: '',
@@ -308,8 +312,8 @@
                 showConfirmButton: false,
                 html: `
                     <div style="display: flex; justify-content: center; gap: 10px;">
-                        <button id="confirmButton" class="swal2-confirm swal2-styled" style="background-color: #d33; color: #fff; padding: 10px 20px; border: none; border-radius: 5px;">{{ __('messages.yes_delete') }}</button>
                         <button id="cancelButton" class="swal2-cancel swal2-styled" style="background-color: #6c757d; color: #fff; padding: 10px 20px; border: none; border-radius: 5px;">{{ __('messages.cancel') }}</button>
+                        <button id="confirmButton" class="swal2-confirm swal2-styled" style="background-color: #d33; color: #fff; padding: 10px 20px; border: none; border-radius: 5px;">{{ __('messages.yes_delete') }}</button>
                     </div>
                 `
             });

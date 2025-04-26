@@ -395,6 +395,30 @@ class SettingsTableSeeder extends Seeder
                 'created_at' => '2025-02-19 13:42:25',
                 'updated_at' => '2025-02-19 13:42:25',
                 'deleted_at' => NULL,
+            ],
+            [
+                'id' => 32,
+                'name' => 'date_format',
+                'val' => 'Y-m-d',
+                'type' => 'misc',
+                'created_by' => 1,
+                'updated_by' => 1,
+                'deleted_by' => NULL,
+                'created_at' => '2025-02-19 13:42:25',
+                'updated_at' => '2025-02-19 13:42:25',
+                'deleted_at' => NULL,
+            ],
+            [
+                'id' => 33,
+                'name' => 'time_format',
+                'val' => 'H:i',
+                'type' => 'misc',
+                'created_by' => 1,
+                'updated_by' => 1,
+                'deleted_by' => NULL,
+                'created_at' => '2025-02-19 13:42:25',
+                'updated_at' => '2025-02-19 13:42:25',
+                'deleted_at' => NULL,
             ]
             ];
 

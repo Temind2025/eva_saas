@@ -41,4 +41,12 @@ return [
     'duration'=>'Duration',
     'plan'=>'Plan',
     'vendor'=>'Vendor',
+    'lbl_tot_plan' => 'Total Plans',
+    'total_active_subscriptions' => 'Total Active Subscriptions',
+    'total_expired_subscriptions' => 'Total Expired Subscriptions', 
+    'total_pending_subscriptions' => 'Total Pending Subscriptions',
+    'total_subscriptions' => 'Total Subscriptions',
+    'lbl_total_plans' => 'Total Plans',
+    'expiring_soon' => 'Subscription Expiring Soon',
+
 ];

@@ -491,79 +491,58 @@ class PaymentController extends Controller
                 ->whereRaw('FIND_IN_SET(?, plan_ids)', [$plan_id]);
         })->where('status', 1)->get();
 
-
-
-            $promotions = Promotion::where('id', $promotion_id)->with('coupon')->first();
-
-
-
-        $discount_amount=0;
-
-        if($promotion_id!=null && $promotions){
-
-            $coupon_data=$promotions->coupon;
-
-            if($coupon_data){
-
-                if( $coupon_data->discount_type=='percent'){
-
-                    $discount_amount=$plan->price* $coupon_data->discount_percentage /100;
-
-                }else{
-
-                    $discount_amount = $coupon_data->discount_amount;
-                }
-
-
+        // Calculate base amount with discount if applicable
+        if ($plan->has_discount) {
+            if ($plan->discount_type === 'percentage') {
+                $discount_amount = $plan->price * ($plan->discount_value / 100);
+            } else {
+                $discount_amount = $plan->discount_value;
             }
-
-
+            $base_amount = $plan->price - $discount_amount;
+        } else {
+            $base_amount = $plan->price;
+            $discount_amount = 0;
         }
 
+        // Calculate tax
         $totalTax = 0;
-
-        $base_amount=$plan->price- $discount_amount;
-
         foreach ($taxes as $tax) {
             if (strtolower($tax->type) == 'fixed') {
                 $totalTax += $tax->value;
             } elseif (strtolower($tax->type) == 'percentage') {
-                $totalTax += ( $base_amount * $tax->value) / 100;
+                $totalTax += ($base_amount * $tax->value) / 100;
             }
         }
 
-        $amount=$base_amount+$totalTax;
+        // Calculate final amount
+        $amount = $base_amount + $totalTax;
 
-
-
-        // Create the subscription
-            $subscription = Subscription::create([
-                'plan_id' => $plan_id,
-                'user_id' => auth()->id(),
-                'start_date' => now(),
-                'end_date' => $end_date,
-                'status' => 'active',
-                'amount' =>$plan->price,
-                'tax_amount' => $totalTax ,
-                'discount_amount'=>$discount_amount,
-                'total_amount' => $amount,
-                'plan_details' => json_encode($plan),
-                'gateway_type'=>$payment_type,
-                'transaction_id'=>$transaction_id,
-                'name' => $plan->name,
-                'identifier' => $plan->identifier,
-                'type' => $plan->type,
-                'duration' => $plan->duration,
-                'payment_id' => null,
-                'max_appointment'=>$plan->max_appointment,
-                'max_branch'=>$plan->max_branch,
-                'max_service'=>$plan->max_service,
-                'max_staff'=>$plan->max_staff,
-                'max_customer'=>$plan->max_customer,
-                'is_active'=>1,
-
-            ]);
-
+        // Create the subscription with correct amounts
+        $subscription = Subscription::create([
+            'plan_id' => $plan_id,
+            'user_id' => auth()->id(),
+            'start_date' => now(),
+            'end_date' => $end_date,
+            'status' => 'active',
+            'amount' => $base_amount,
+            'tax_amount' => $totalTax,
+            'discount_amount' => $discount_amount,
+            'total_amount' => $amount,
+            'plan_details' => json_encode($plan),
+            'gateway_type'=>$payment_type,
+            'transaction_id'=>$transaction_id,
+            'name' => $plan->name,
+            'identifier' => $plan->identifier,
+            'type' => $plan->type,
+            'duration' => $plan->duration,
+            'payment_id' => null,
+            'max_appointment'=>$plan->max_appointment,
+            'max_branch'=>$plan->max_branch,
+            'max_service'=>$plan->max_service,
+            'max_staff'=>$plan->max_staff,
+            'max_customer'=>$plan->max_customer,
+            'is_active'=>1,
+        ]);
 
           $currency = strtolower(GetcurrentCurrency());
           $plan->givePermissionToUser(auth()->id());

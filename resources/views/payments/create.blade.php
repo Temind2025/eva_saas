@@ -36,11 +36,11 @@
                 <option value="" disabled selected>{{ __('frontend.select_plan') }}</option>
                 @foreach ($plans as $plan)
                     <option value="{{ $plan->id }}" 
-                            data-price="{{ $plan->total_price }}" 
-                            data-formatted-price="{{ \Currency::format($plan->total_price) }}" 
-                            data-currency="{{ defaultCurrency() }}" 
+                            data-base-price="{{ $plan->has_discount ? $plan->discounted_price : $plan->price }}"
+                            data-tax="{{ $plan->tax }}"
                             {{ (isset($payment) && $payment->plan_id == $plan->id) ? 'selected' : '' }}>
-                        {{ $plan->name }} ({{ $plan->duration . '-' . str_replace('ly', '', $plan->type) }})
+                        {{ $plan->name }} 
+                        ({{ $plan->duration . '-' . str_replace('ly', '', $plan->type) }})
                     </option>
                 @endforeach
             </select>
@@ -100,13 +100,21 @@
     // Plan selection change handler
     $('#plan_id').change(function(){
         var selectedPlan = $('#plan_id option:selected');
-        var formattedPrice = selectedPlan.data('formatted-price'); 
-        var rawPrice = selectedPlan.data('price');
+        var basePrice = parseFloat(selectedPlan.data('base-price')) || 0;
+        var tax = parseFloat(selectedPlan.data('tax')) || 0;
+        var totalAmount = basePrice + tax;
 
-        // Update price display
-        $('#amount_display').val(formattedPrice);  
-        $('#amount').val(rawPrice);  
+        // Update price display with total amount (base price + tax)
+        $('#amount_display').val(formatCurrency(totalAmount));
+        $('#amount').val(totalAmount);
     });
+
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(amount) ;
+    }
     
     // Initialize date picker if flatpickr is available
     document.addEventListener('DOMContentLoaded', function () {

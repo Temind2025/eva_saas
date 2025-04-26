@@ -1061,6 +1061,20 @@ return [
     'vendor_updated_successfully' => 'تم تحديث البائع بنجاح!',
     'vendor_created_successfully' => 'تم إنشاء البائع بنجاح!',
 
+    'lbl_vendor' => 'بائع',
+    'lbl_my_profile' => 'ملفي الشخصي',
+    'active_subscription_cannot_be_deleted' => 'لا يمكن حذف الاشتراك النشط',
+    'subscription_deleted_successfully' => 'تم حذف الاشتراك بنجاح',
+    'error_deleting_subscription' => 'حدث خطأ أثناء حذف الاشتراك',
+    'are_you_sure' => 'هل أنت متأكد؟',
+    'you_wont_be_able_to_revert_this' => 'لن تتمكن من التراجع عن هذا!',
+    'yes_delete_it' => 'نعم، احذفه!',
+    'cancel' => 'إلغاء',
+    'deleted' => 'تم الحذف!',
+    'error' => 'خطأ!',
+    'something_went_wrong' => 'حدث خطأ ما!',
+    'vendor_name' => 'اسم البائع',
+    'generated_on' => 'تم إنشاؤه في',
 
 
 ];

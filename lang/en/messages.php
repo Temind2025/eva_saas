@@ -356,7 +356,7 @@ return [
     'upgrade' => 'Upgrade',
     'features_subtitle' => 'Powerful Tools to Enhance Salon Experiences',
     'features_des_title' => 'Flexible Subscription Plans for Every Salons Needs',
-    'features_des_content' => 'Enjoy powerful tools like appointment scheduling, expert selection, payment management, and exclusive packages—all at a price that works for you.s',
+    'features_des_content' => 'Enjoy powerful tools like appointment scheduling, expert selection, payment management, and exclusive packages—all at a price that works for you',
 
     'cancel_subscription_msg' => 'Your Subscription has been Cancelled Successfully',
     'admin' => 'Vendor',
@@ -1397,8 +1397,32 @@ return [
     'blog_detail' => 'Blog Detail',
     'date_format' => 'Date format',
     'time_formate' => 'Time format',
+    'plan_discount' => 'Plan Discount',
     'vendor_updated_successfully'=>'Vendor updated successfully!',
     'vendor_created_successfully'=>'Vendor created successfully!',
+    
+    'lbl_vendor' => 'Vendor',
+    'lbl_my_profile' => 'My Profile',
 
+    'lbl_new_password' => 'New Password',
+    'lbl_new_confirm_password' => 'New Confirm Password',
+    'placeholder_new_password' => 'Enter New Password',
+    'placeholder_new_confirm_password' => 'Enter New Confirm Password',
+    "invalid_file_type" => "Only image files (JPEG, JPG, PNG, GIF) are allowed.", 
+    'active_subscription_cannot_be_deleted' => 'Active subscription cannot be deleted',
+    'subscription_deleted_successfully' => 'Subscription deleted successfully',
+    'error_deleting_subscription' => 'Error occurred while deleting subscription',
+    'are_you_sure' => 'Are you sure?',
+    'you_wont_be_able_to_revert_this' => 'You won\'t be able to revert this!',
+    'yes_delete_it' => 'Yes, delete it!',
+    'cancel' => 'Cancel',
+    'deleted' => 'Deleted!',
+    'error' => 'Error!',
+    'something_went_wrong' => 'Something went wrong!',
+    'all_subscriptions' => 'All Subscriptions',
+    'user_name' => 'User Name',
+    'vendor_name' => 'Vendor Name',
+'generated_on' => 'Generated On',
+    
 
 ];

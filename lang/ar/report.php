@@ -43,5 +43,6 @@ return [
     'lbl_tips_earn' => 'الإكراميات المكتسبة',
     'lbl_total_earning' => 'إجمالي الأرباح',
     'order-report' => 'تقرير الطلب',
+    'all_subscription' => 'جميع الاشتراكات',
 
 ];

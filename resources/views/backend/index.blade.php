@@ -112,11 +112,14 @@
               <div class="d-flex align-items-center text-info gap-3 flex-shrink-0">
                 <i class="fa-regular fa-clock"></i>
                 @php
-                $currentDateTime = Carbon\Carbon::now();
-                $dateTime = Carbon\Carbon::parse($booking->start_date_time);
-                $humanTimeDifference = $dateTime->diffForHumans($currentDateTime);
+                    $timezone = setting('default_time_zone') ?? 'UTC';
+                    $currentDateTime = Carbon\Carbon::now($timezone);
+                    $dateTime = Carbon\Carbon::parse($booking->start_date_time, $timezone);
+                    $humanTimeDifference = $dateTime->diffForHumans($currentDateTime);
+                    $timeUntil = $currentDateTime->copy()->add($dateTime->diff())->diffForHumans(null, true);
                 @endphp
-                In {{ $currentDateTime->add($dateTime->diff())->diffForHumans(null, true) }}
+
+                In {{ $timeUntil }}
                 <div class="dropdown">
                   <a href="{{ route('backend.bookings.index', ['booking_id' => $booking->id]) }}" class="text-primary">
                     <i class="fa-solid fa-chevron-right"></i>

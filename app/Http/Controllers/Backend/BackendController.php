@@ -18,7 +18,7 @@ use Modules\Product\Models\Order;
 use Modules\Product\Models\OrderGroup;
 use Modules\Subscriptions\Models\Subscription;
 use Modules\Subscriptions\Models\SubscriptionTransactions;
-
+use Modules\Subscriptions\Models\Plan;
 class BackendController extends Controller
 {
     /**
@@ -85,6 +85,7 @@ class BackendController extends Controller
             $data = [
                'total_active_subscriptions' => Subscription::where('status', 'active')->whereDate('end_date', '>=', Carbon::today())
               ->whereJsonDoesntContain('plan_details->identifier', 'free')->count(),
+              'total_plans' => Plan::where('status', 1)->count(),  // Add this line
 
                 'months' => $months,
                 'retention_rate' => $retention_rate,
@@ -147,6 +148,11 @@ class BackendController extends Controller
                             'status' => $status
                         ];
                     }),
+                'expiringSoon' => Subscription::where('status', 'active')
+                    ->whereJsonDoesntContain('plan_details->identifier', 'free')  
+                    ->whereDate('end_date', '>', now())
+                    ->whereDate('end_date', '<=', now()->addDays(7))
+                    ->count(),
             ];
 
             return view('superadmin.dashboard')->with($data);

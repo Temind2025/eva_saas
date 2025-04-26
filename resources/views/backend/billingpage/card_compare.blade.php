@@ -16,6 +16,14 @@
                                             <span class="mx-1">/</span>
                                             <span>{{ $plan->duration.' ' . __('frontend.' . strtolower($plan->type)) ?? '-' }}</span>
                                         </div>
+                                        @if($plan->has_discount == 1 && $plan->discounted_price != null)
+                                            <span class="mx-1">
+                                                {{ \Currency::formatSuperadmin($plan->discount_value ?? 0) }}
+                                                @if($plan->discount_type === 'percentage')
+                                                    %
+                                                @endif
+                                            OFF</span>
+                                        @endif
                                         <div class="d-flex mb-2 align-items-center gap-3">
                                             <h6 class="m-0 font-size-18">{{ $plan->name ?? '-'}}</h6>
                                         </div>

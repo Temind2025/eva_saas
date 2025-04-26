@@ -47,11 +47,10 @@ class PricingController extends Controller
     public function pricing_plan(Request $request)
 {
     if (!auth()->check()) {
-
         return redirect()->route('user.login');
     }
 
-    $selected_plan=$request->id;
+    $selected_plan = $request->id;
     $activeSubscriptions = Subscription::where('user_id', auth()->id())
         ->where('status', 'active')
         ->where('end_date', '>', now())
@@ -65,49 +64,58 @@ class PricingController extends Controller
     $data['selected_plan']= $selected_plan;
     
     $data['plan_details'] = Plan::find($selected_plan);
+    
+    // Calculate base price and discount
+    if (isset($data['plan_details'])) {
+        $basePrice = $data['plan_details']->price;
+        
+        // Handle plan discount if exists
+        if ($data['plan_details']->has_discount) {
+            $discountAmount = 0;
+            
+            if ($data['plan_details']->discount_type === 'percentage') {
+                $discountAmount = ($basePrice * $data['plan_details']->discount_value) / 100;
+            } else { // fixed
+                $discountAmount = $data['plan_details']->discount_value;
+            }
+            
+            // Ensure discount doesn't exceed price
+            $discountAmount = min($discountAmount, $basePrice);
+            $discountedPrice = $basePrice - $discountAmount;
+            
+            $data['discount_details'] = [
+                'has_discount' => true,
+                'discount_type' => $data['plan_details']->discount_type,
+                'discount_value' => $data['plan_details']->discount_value,
+                'discount_amount' => $discountAmount,
+                'discounted_price' => $discountedPrice
+            ];
+            
+            // Use discounted price for tax calculations
+            $basePrice = $discountedPrice;
+        }
+    } else {
+        $basePrice = 0;
+    }
 
+    // Get plan taxes
     $planTaxes = PlanTax::where(function ($query) use ($selected_plan) {
         $query->whereNotNull('plan_ids')
               ->whereRaw('FIND_IN_SET(?, plan_ids)', [$selected_plan]);
     })->where('status', 1)->get();
 
-
-
-    $data['promotions'] = Promotion::whereHas('promotionCouponPlanMappings', function ($query) use ($data) {
-        $query->where('plan_id', $data['selected_plan']);
-    })
-    ->where(function ($query) {
-        $query->where('start_date_time', '<=', now())
-              ->where('end_date_time', '>=', now());
-    })
-    ->where('status', 1) 
-    ->whereHas('coupon') // Ensure the coupon relationship is not null
-    ->with('coupon') // Eager load the coupon relationship
-    ->get();
-
-
     $totalTaxAmount = 0;
     $taxDetails = [];
 
-
-
-    if (isset($data['plan_details']['price'])) {
-        $basePrice = $data['plan_details']['price'];
-    } else {
-        $basePrice = 0; // Default value if 'price' is not set
-    }
-
+    // Calculate taxes based on discounted price if applicable
     foreach ($planTaxes as $tax) {
         if ($tax->type == 'Percentage') {
-              
-                $taxAmount = ($basePrice * $tax->value) / 100;
-            } else {
-             
-                $taxAmount = $tax->value;
-            }
+            $taxAmount = ($basePrice * $tax->value) / 100;
+        } else {
+            $taxAmount = $tax->value;
+        }
 
         $totalTaxAmount += $taxAmount;
-
         $taxDetails[] = [
             'title' => $tax->title,
             'type' => $tax->type,
@@ -116,11 +124,32 @@ class PricingController extends Controller
         ];
     }
 
+    // Get promotions
+    $data['promotions'] = Promotion::whereHas('promotionCouponPlanMappings', function ($query) use ($selected_plan) {
+        $query->where('plan_id', $selected_plan);
+    })
+    ->where(function ($query) {
+        $query->where('start_date_time', '<=', now())
+              ->where('end_date_time', '>=', now());
+    })
+    ->where('status', 1)
+    ->whereHas('coupon')
+    ->with('coupon')
+    ->get();
+
+    // Set final price details
+    $data['original_price'] = $data['plan_details']->price ?? 0;
     $data['tax_details'] = $taxDetails;
     $data['total_tax'] = $totalTaxAmount;
-    $data['total_amount'] = $basePrice + $totalTaxAmount;
+    
+    // Calculate final total based on whether there's a discount
+    if (isset($data['discount_details'])) {
+        $data['total_amount'] = $data['discount_details']['discounted_price'] + $totalTaxAmount;
+    } else {
+        $data['total_amount'] = $basePrice + $totalTaxAmount;
+    }
 
-    return view('frontend::pricing_plan', compact('data') );
+    return view('frontend::pricing_plan', compact('data'));
 }
 
     public function calculate_discount(Request $request){
@@ -159,6 +188,7 @@ class PricingController extends Controller
             $discount_amount=$coupon_data->discount_amount ;
         }
     
+   
         $totalTaxAmount = 0;
         $taxDetails = [];
 
@@ -192,7 +222,7 @@ class PricingController extends Controller
         }
         
         $totalAmount = $basePrice + $totalTaxAmount;
-        
+    
         $data['tax_details'] = $taxDetails;
         $data['total_tax'] = $totalTaxAmount;
         $data['total_amount'] = $totalAmount;
@@ -276,6 +306,27 @@ class PricingController extends Controller
         $totalTaxAmount = 0;
         $taxDetails = [];
     
+        $planDiscountAmount = 0;
+        if ($data['plan_details']->has_discount) {
+            $planDiscountAmount = 0;
+            
+            if ($data['plan_details']->discount_type === 'percentage') {
+                $planDiscountAmount = ($basePrice * $data['plan_details']->discount_value) / 100;
+            } else {
+                $planDiscountAmount = $data['plan_details']->discount_value;
+            }
+            
+            // Ensure plan discount doesn't exceed price
+            $planDiscountAmount = min($planDiscountAmount, $basePrice);
+            $basePrice -= $planDiscountAmount;
+    
+            $data['plan_discount'] = [
+                'has_discount' => true,
+                'discount_type' => $data['plan_details']->discount_type,
+                'discount_value' => $data['plan_details']->discount_value,
+                'discount_amount' => $planDiscountAmount
+            ];
+        }
         foreach ($planTaxes as $tax) {
             $taxAmount = ($tax->type == 'Percentage') ? ($basePrice * $tax->value) / 100 : $tax->value;
             $totalTaxAmount += $taxAmount;
@@ -311,7 +362,8 @@ class PricingController extends Controller
                 return $discount <= $basePrice; // Only keep promotions where discount is valid
             })
             ->values();
-    
+            $data['planDiscountAmount']= $planDiscountAmount;
+           
         $data['tax_details'] = $taxDetails;
         $data['total_tax'] = $totalTaxAmount;
         $data['total_amount'] = $totalAmount;

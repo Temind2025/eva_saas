@@ -1,12 +1,13 @@
 @extends('frontend::layouts.master2')
-
+@section('title')
+{{ __('messages.pricing_plan') }}
+@endsection
 @section('content')
-
 <section class="section-spacing-bottom">
     <div class="container">
-        <a href="{{ route('pricing') }}" class="d-flex align-items-center gap-2 my-5 pb-2 text-body" href="#">
+        <a href="{{ route('pricing') }}" class="d-flex align-items-center gap-2 my-5 pb-2 text-body">
             <i class="ph ph-caret-left"></i>
-            <span class="font-size-14 fw-semibold">Back</span>
+            <span class="font-size-14 fw-semibold">{{__('messages.back')}}</span>
         </a>
         <div class="row">
             <!-- Left Section -->
@@ -25,11 +26,11 @@
                                     <span class="text-muted">
                                         / {{ $plan->duration ?? '-' }} 
                                     @if($plan->type == 'Monthly')
-                                        <span class="text-muted"> Month</span>
+                                        <span class="text-muted"> {{__('messages.month')}}</span>
                                     @elseif($plan->type == 'Weekly')
-                                        <span class="text-muted"> Week</span>
+                                        <span class="text-muted"> {{__('messages.week')}}</span>
                                     @elseif($plan->type == 'Yearly')
-                                        <span class="text-muted"> Year</span>
+                                        <span class="text-muted"> {{__('messages.year')}}</span>
                                     @endif
                                     <span>
                                 </div>
@@ -93,7 +94,7 @@
                                 @endforeach
                             </select>
                             <div class="invalid-feedback" id="payment-method-error" style="display:none; ">
-                                please select payment method 
+                                {{__('messages.please_select_payment_method')}} 
                             </div>
                         </div>
 
@@ -102,7 +103,7 @@
                     <div id="loader" style="display: none;">
                         <!-- You can use a spinner or any loading indicator -->
                         <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
+                            <span class="visually-hidden">{{__('messages.loading')}}</span>
                         </div>
                     </div>
 
@@ -115,7 +116,7 @@
                     <h5 class="mb-2 font-size-18">{{ __('frontend.available_coupons') }}
                     </h5>
                     @if (count($data['promotions']) > 2)
-                    <a href="javascript:void(0);" id="viewAllCoupons" data-bs-toggle="modal" data-bs-target="#all-coupons">View All</a>
+                    <a href="javascript:void(0);" id="viewAllCoupons" data-bs-toggle="modal" data-bs-target="#all-coupons">{{__('messages.view_all')}}</a>
                     @endif
                 </div>
 
@@ -151,34 +152,61 @@
                     @endif
 
                     <div class="bg-quaternary my-5">
-                        <!-- Payment Details -->
+                        <!-- Payment Details Section -->
                         <div class="payment-details-card bg-quaternary border-0 rounded-2">
-                            <h5 class="payment-details-heading pb-1 mb-3 font-size-18">{{ __('frontend.payment_details') }}
-                            </h5>
+                            <h5 class="payment-details-heading pb-1 mb-3 font-size-18">{{ __('frontend.payment_details') }}</h5>
                             <div>
+                                <!-- Original Price -->
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span>Price</span>
-                                    <h6 class="font-size-18 mb-0" id="price">{{ \Currency::formatSuperadmin($data['plan_details']['price'] ?? 0) }}</h6>
+                                    <span>{{__('messages.price')}}</span>
+                                    <h6 class="font-size-18 mb-0" id="price">
+                                        {{ \Currency::formatSuperadmin($data['plan_details']['price'] ?? 0) }}
+                                    </h6>
                                 </div>
 
-                                 <div class="d-flex justify-content-between mb-2 d-none" id="discount_section">
+                                <!-- Plan Discount - Show only if has_discount is true -->
+                                @if(isset($data['plan_details']['has_discount']) && $data['plan_details']['has_discount'])
+                                <div class="d-flex justify-content-between mb-2" id="plan_discount_section">
                                     <div class="d-flex align-items-center gap-2">
-                                        <span>Coupon</span>
-                                         <span class="text-success" id="cupon_code"></span>
+                                        <span>{{__('messages.plan_discount')}}</span>
+                                        <span class="text-success" id="discount_type_label">
+                                            ({{ $data['plan_details']['discount_type'] == 'percentage' ? 
+                                                $data['plan_details']['discount_value'] . '%' : 
+                                                \Currency::formatSuperadmin($data['plan_details']['discount_value']) 
+                                            }})
+                                        </span>
+                                    </div>
+                                    <h6 class="font-size-18 text-success mb-0" id="plan_discount_amount">
+                                        - {{ \Currency::formatSuperadmin($data['plan_details']['price'] - $data['plan_details']['discounted_price']) }}
+                                    </h6>
+                                </div>
+                                @endif
+
+                                <!-- Coupon Discount -->
+                                <div class="d-flex justify-content-between mb-2 d-none" id="discount_section">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span>{{__('messages.coupon')}}</span>
+                                        <span class="text-success" id="cupon_code"></span>
                                     </div>
                                     <h6 class="font-size-18 text-success mb-0" id="discount_amount"></h6>
-                                </div> 
+                                </div>
 
-                                <!-- Subtotal Section (this will be dynamically updated) -->
+                                <!-- Subtotal after discounts -->
                                 <div class="d-flex justify-content-between mb-2" id="subtotal_section">
-                                    <span>Subtotal</span>
-                                    <h6 class="font-size-18 mb-0" id="subtotal_price">{{ \Currency::formatSuperadmin($data['plan_details']['price'] ?? 0) }}</h6>
+                                    <span>{{__('messages.subtotal')}}</span>
+                                    <h6 class="font-size-18 mb-0" id="subtotal_price">
+                                        {{ \Currency::formatSuperadmin(
+                                            isset($data['plan_details']['has_discount']) && $data['plan_details']['has_discount'] 
+                                            ? $data['plan_details']['discounted_price'] 
+                                            : $data['plan_details']['price'] ?? 0
+                                        ) }}
+                                    </h6>
                                 </div>
 
                                 @if($data['total_tax']>0)
 
                                 <div class="d-flex justify-content-between align-items-center mb-2 tax-box" href="#collapseTaxes" data-bs-toggle="collapse" aria-expanded="true">
-                                    <span class="h6 fw-normal text-body mb-0">Tax </span>
+                                    <span class="h6 fw-normal text-body mb-0">{{__('messages.tax')}}</span>
                                     <div class="d-flex align-items-center gap-2">
                                         <i class="ph ph-caret-up"></i>
                                         <span class="h6 font-size-18 text-danger mb-0" id="total_tax">+ {{\Currency::formatSuperadmin($data['total_tax'])}}</span>
@@ -188,7 +216,7 @@
 
                                 <div id="collapseTaxes" class="collapse show" style="" id="applied_tax">
                                     <div class="applied-taxes-card bg-white p-3 mb-5 rounded">
-                                        <h6 class="mb-3">Applied Taxes</h6>
+                                        <h6 class="mb-3">{{__('messages.applied_taxes')}}</h6>
                                         <div>
 
                                             @foreach ($data['tax_details'] as $taxes )
@@ -210,11 +238,9 @@
                                 </div>
                                 @endif
 
-            
-
                             </div>
                             <h6 class="d-flex align-items-center justify-content-between mb-0">
-                                <span>Total Payment</span>
+                                <span>{{__('messages.total_payment')}}</span>
                                 <span class="text-primary fs-5" id="total_amount">{{\Currency::formatSuperadmin($data['total_amount'])}}</span>
                             </h6>
                         </div>
@@ -224,9 +250,9 @@
                     <div class="d-flex justify-content-end align-items-center gap-5">
                         <div class="d-flex align-items-center justify-content-end gap-2 font-size-14">
                             <i class="ph ph-shield-check h5 mb-0 text-success"></i>
-                            <span>100% secure checkout in seconds</span>
+                            <span>{{__('messages.100%_secure_checkout_in_seconds')}}</span>
                         </div>
-                        <button class="btn btn-secondary" type="submit"  >Proceed Payment</button>
+                        <button class="btn btn-secondary" type="submit"  >{{__('messages.proceed_payment')}}</button>
                     </div>
 
                 </form>
@@ -279,9 +305,7 @@
                             @endforeach
 
                         </ul>
-                        <!-- <div class="d-flex justify-content-end mt-5">
-                            <button type="button" class="btn btn-secondary">Save</button>
-                        </div> -->
+                    
                     </form>
                 </div>
                 @endif
@@ -290,7 +314,7 @@
     </div>
 </div>
 
-    <!-- id="successfully-modal" -->
+<!-- Successfully Modal -->
 <div class="modal fade" id="successfully-modal">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content section-background">
@@ -299,39 +323,46 @@
                     <img src="{{ asset('/img/frontend/modal-success.png') }}" alt="modal-success">
                 </div>
                 <div class="text-center">
-                    <h5>Thank you for choosing frezka</h5>
-                    <p class="mb-0">You've successfully purchased the <span class="text-primary">esstential</span> plan</p>
+                    <h5>{{__('frontend.thank_you_for_choosing')}}</h5>
+                    <p class="mb-0">
+                        {{__('frontend.successfully_purchased')}} 
+                        <span class="text-primary">{{__('frontend.essential')}}</span> {{__('messages.plan')}}
+                    </p>
                 </div>
                 <div class="mt-5 pt-2 d-flex justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#cancellation-confirmed">Start Exploring</button>
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#cancellation-confirmed">
+                        {{__('frontend.start_exploring')}}
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-    <!-- id="cancellation-confirmed" -->
-    <div class="modal fade" id="cancellation-confirmed">
+<!-- Cancellation Confirmed Modal -->
+<div class="modal fade" id="cancellation-confirmed">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content section-background">
             <div class="modal-body modal-body-inner">
                 <div class="mb-5 pb-3 d-flex justify-content-center">
-                    <img src="{{ asset('/img/frontend/modal-success.png') }}" alt="modal-success">
+                   
                 </div>
                 <div class="text-center">
-                    <h5>Cancellation Confirmed</h5>
-                    <p class="mb-0">Are you sure you want to cancel your payment</p>
+                    <h5>{{__('frontend.cancellation_confirmed')}}</h5>
+                    <p class="mb-0">{{__('frontend.cancel_payment_confirmation')}}</p>
                 </div>
                 <div class="mt-5 pt-2 d-flex gap-3 flex-wrap justify-content-center">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-secondary" >Continue to Pay</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">{{__('frontend.Cancel')}}</button>
+                    <button type="button" class="btn btn-secondary">{{__('frontend.continue_to_pay')}}</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+@endsection
+@push('after-scripts')
+<script src="{{ asset('js/checkout.js') }}"></script>
 <script>
 function fetchPaymentDetails(planId) {
     // Show the loader before the request
@@ -349,6 +380,7 @@ function fetchPaymentDetails(planId) {
             var taxData = '';
 
             if (response.promotions && response.promotions.length > 0) {
+
                 $('#promotional_section').removeClass('d-none');
                 $.each(response.promotions, function(index, promotion) {
                     if (index < 2) {
@@ -388,6 +420,7 @@ function fetchPaymentDetails(planId) {
                         </li>`;
                 });
             } else {
+              
                 $('#promotional_section').addClass('d-none');
             }
 
@@ -443,193 +476,211 @@ function stripCurrencySymbol(value) {
 }
 
 function formatCurrencyvalue(value){
-           if (window.formatSuperadmin !== undefined) {
-             return window.formatSuperadmin(value)
-           }
-           return value
+    if (window.formatSuperadmin !== undefined) {
+        return window.formatSuperadmin(value)
+    }
+    return value
+}
+
+$(document).on('change', '.coupon-radio', function () {
+    if ($(this).is(":checked")) {
+        const couponId = $(this).val();
+        const planId = $('#selected-plan-id').val();
+        
+        // Get the base price for coupon calculation
+        const hasPlanDiscount = $('#plan_discount_section').length > 0;
+        const basePrice = hasPlanDiscount ? 
+            stripCurrencySymbol($('#subtotal_price').text()) : 
+            stripCurrencySymbol($('#price').text());
+
+        $('#loader').show();
+
+        $.ajax({
+            url: "{{ route('calculate_discount') }}",
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            data: {
+                coupon_id: couponId,
+                plan_id: planId,
+                base_price: basePrice,
+                has_plan_discount: hasPlanDiscount
+            },
+            success: function (response) {
+                // Show discount sections
+                $('#discount_section').removeClass('d-none');
+                $('#subtotal_section').removeClass('d-none');
+
+                // Calculate coupon discount
+                const couponDiscount = response.discount_amount || 0;
+                const subtotalAfterAllDiscounts = basePrice - couponDiscount;
+
+                // Update discount and subtotal displays
+                $('#subtotal_price').text(formatCurrencyvalue(subtotalAfterAllDiscounts));
+                $('#discount_amount').text('- ' + formatCurrencyvalue(couponDiscount));
+                $('#cupon_code').text('(' + response.coupon_code + ')');
+
+                // Calculate tax based on subtotal after all discounts
+                let totalTaxAmount = 0;
+                const taxDetails = response.tax_details.map(tax => {
+                    let taxAmount;
+                    if (tax.type === 'Percentage') {
+                        taxAmount = (subtotalAfterAllDiscounts * tax.value) / 100;
+                    } else {
+                        taxAmount = tax.value;
+                    }
+                    totalTaxAmount += taxAmount;
+                    return {
+                        ...tax,
+                        amount: taxAmount
+                    };
+                });
+
+                // Update tax display
+                $('#total_tax').text('+ ' + formatCurrencyvalue(totalTaxAmount));
+                updateTaxDetails(taxDetails);
+
+                // Calculate and update final total (subtotal + recalculated tax)
+                const finalTotal = subtotalAfterAllDiscounts + totalTaxAmount;
+                $('#total_amount').text(formatCurrencyvalue(finalTotal));
+                $('#selected-price-id').val(finalTotal);
+
+                // Update coupon status
+                updateCouponStatus(couponId);
+
+                $('#loader').hide();
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+                $('#loader').hide();
+                $(this).prop('checked', false);
+                $('#discount_section').addClass('d-none');
+                $('#subtotal_section').addClass('d-none');
+            }
+        });
+    }
+});
+
+function updateTaxDetails(taxDetails) {
+    if (taxDetails && taxDetails.length > 0) {
+        let taxHtml = `
+            <div class="applied-taxes-card bg-white p-3 mb-5 rounded">
+                <h6 class="mb-3">{{ __('messages.applied_taxes') }}</h6>
+                <div>
+        `;
+        taxDetails.forEach(tax => {
+            taxHtml += `
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="font-size-14">${tax.title} (${tax.type === 'Percentage' ? 
+                        tax.value + '%' : formatCurrencyvalue(tax.value)})</span>
+                    <h6 class="mb-0">${formatCurrencyvalue(tax.amount)}</h6>
+                </div>
+            `;
+        });
+        taxHtml += `</div></div>`;
+        $('#collapseTaxes').html(taxHtml).collapse('show');
+    } else {
+        $('#collapseTaxes').html('<p class="text-muted">{{ __("messages.no_taxes_applied") }}</p>').collapse('hide');
+    }
+}
+
+function updateCouponStatus(selectedCouponId) {
+    $('.coupon-radio').each(function() {
+        const radioButton = $(this);
+        const card = radioButton.closest('.coupons-card');
+        const currentCouponId = radioButton.val();
+        
+        if (currentCouponId == selectedCouponId) {
+            card.find('.coupons-status').text('Applied');
+            radioButton.prop('checked', true);
+        } else {
+            card.find('.coupons-status').text('Apply');
+            radioButton.prop('checked', false);
         }
+    });
+}
 
 
-    //    $(document).ready(function () {
-    //         // Attach event listener to all radio buttons with class 'coupon-radio'
-    //         $(".coupon-radio").change(function () {
+document.getElementById('payment-form').addEventListener('submit', function (event) {
+    // Get the selected payment method
+    const paymentMethod = document.getElementById('payment-method').value;
+    ocument.getElementById('payment-method').classList.remove('is-invalid'); // Remove highlight
+    document.getElementById('payment-method-error').style.display = 'none'; // Hide error message
+});
 
 
-    //             if ($(this).is(":checked")) {
-    //                 // Get selected coupon ID and plan ID
-    //                 const couponId = $(this).val();
-    //                 const planId = $('#selected-plan-id').val();
+$(document).ready(function() {
+    $('#payment-form').on('submit', function(e) {
 
-    //                 // $('#loader').show();
-    //                 // Make an AJAX request to calculate_discount route
-    //                 $.ajax({
-    //                     url: "{{ route('calculate_discount') }}",
-    //                     method: "POST",
-    //                     headers: {
-    //                         "X-CSRF-TOKEN": "{{ csrf_token() }}"
-    //                     },
-    //                     data: {
-    //                         coupon_id: couponId,
-    //                         plan_id: planId
-    //                     },
-    //                     success: function (response) {
-
-    //                         if(response.discount_amount>0 ){
-
-    //                             $('#discount_section').removeClass('d-none');
-
+        if (document.getElementById('payment-method').value !== 'razorpay') {
+            return true; 
+        }
+       
+        e.preventDefault();
+        
+        $.ajax({
+            url: $(this).attr('action'),
+            type: "POST",
+            data: $(this).serialize(),
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                var options = {
+                    "key": response.key,
+                    "amount": response.amount,
+                    "currency": response.currency,
+                    "name": response.name,
+                    "description": response.description,
+                    "order_id": response.order_id,
+                    "handler": function (paymentResponse){
+                        const successUrl = new URL(response.success_url);
+                        successUrl.searchParams.append('gateway', 'razorpay');
+                        successUrl.searchParams.append('razorpay_payment_id', paymentResponse.razorpay_payment_id);
+                        successUrl.searchParams.append('plan_id', response.plan_id);
                         
-
-    //                             $('#total_tax').text(response.total_tax);
-    //                             $('#total_amount').text(formatCurrencyvalue(response.total_amount));
-    //                             $('#selected-price-id').val(response.total_amount);
-    //                             $('#cupon_code').text(response.coupon_code);
-    //                             $('#discount_amount').text(formatCurrencyvalue(response.discount_amount));
-
-                          
-    //                         }else{
-
-    //                             $('#discount_section').addClass('d-none');
-    //                         }
-
-    //                          $('#loader').hide();
-                           
-    //                     },
-    //                     error: function (xhr, status, error) {
-
-    //                          $('#loader').hide();
-    //                         // Handle error response
-    //                         console.error("Error:", error);
-    //                     }
-    //                 });
-    //             }
-    //         });
-    //     });
-
-
-        $(document).ready(function () {
-    // Use event delegation for dynamically added elements
-    $(document).on('change', '.coupon-radio', function () {
-        if ($(this).is(":checked")) {
-            // Get selected coupon ID and plan ID
-            const couponId = $(this).val();
-            const planId = $('#selected-plan-id').val();
-
-            $('#loader').show();
-          
-            $.ajax({
-                url: "{{ route('calculate_discount') }}",
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                },
-                data: {
-                    coupon_id: couponId,
-                    plan_id: planId
-                },
-                success: function (response) {
-                    const originalPrice = parseFloat($('#price').text().replace(/[^0-9.-]+/g, ""));
-                    const discountAmount = response.discount_amount || 0;
-                    const subtotal = originalPrice - discountAmount;
-
-                    // Update Subtotal price
-                    $('#subtotal_price').text(formatCurrencyvalue(subtotal));
-
-                    if (response.tax_details && response.tax_details.length > 0) {
-                        var taxHtml = `
-                            <div class="applied-taxes-card bg-white p-3 mb-5 rounded">
-                                <h6 class="mb-3">Applied Taxes</h6>
-                                <div>
-                        `;
-                        $.each(response.tax_details, function(index, tax) {
-                            taxHtml += `
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="font-size-14">${tax.title} (${tax.type === 'Percentage' ? tax.value + '%' : formatCurrencyvalue(tax.value)})</span>
-                                    <h6 class="mb-0">${formatCurrencyvalue(tax.amount)}</h6>
-                                </div>
-                            `;
-                        });
-                        taxHtml += `</div></div>`;
-                        $('#collapseTaxes').html(taxHtml).collapse('show');
-                    } else {
-                        $('#collapseTaxes').html('<p class="text-muted">No taxes applied.</p>').collapse('show');
+                        window.location.href = successUrl.toString();
+                    },
+                    "prefill": {
+                        "name": response.prefill.name??'-',
+                        "email": response.prefill.email,
+                        "contact": response.prefill.contact??'-',
+                    },
+                    "theme": {
+                        "color": "#F37254"
                     }
-
-                    if (response.discount_amount > 0) {
-                        $('#discount_section').removeClass('d-none');
-                        $('#subtotal_section').removeClass('d-none');
-                        $('#total_tax').text(formatCurrencyvalue(response.total_tax));
-                        $('#total_amount').text(formatCurrencyvalue(response.total_amount));
-                        $('#selected-price-id').val(response.total_amount);
-                        $('#cupon_code').text('(' + response.coupon_code + ')');
-                        $('#discount_amount').text(formatCurrencyvalue(response.discount_amount));
-
-                    } else {
-                        $('#discount_section').addClass('d-none');
-                        $('#subtotal_section').addClass('d-none');
-
-                    }
-
-                    
-                // Synchronize selection in promotion_id section
-                $('#promotional_id .coupon-radio').each(function() {
-                    const radioButton = $(this);
-                    const card = radioButton.closest('.coupons-card');
-                    const currentCouponId = radioButton.val();
-
-                    if (currentCouponId == couponId) {
-                        card.find('.coupons-status').text('Applied');
-                        radioButton.prop('checked', true); // Select the radio button
-                    } else {
-                        card.find('.coupons-status').text('Apply');
-                        radioButton.prop('checked', false); // Unselect other radio buttons
-                    }
-                });
-
-                // Synchronize selection in coupon_id section
-                $('#coupon_id .coupon-radio').each(function() {
-                    const radioButton = $(this);
-                    const card = radioButton.closest('.coupons-card');
-                    const currentCouponId = radioButton.val();
-
-                    if (currentCouponId == couponId) {
-                        card.find('.coupons-status').text('Applied');
-                        radioButton.prop('checked', true); // Select the radio button
-                    } else {
-                        card.find('.coupons-status').text('Apply');
-                        radioButton.prop('checked', false); // Unselect other radio buttons
-                    }
-                });
+                };
                 
-                    $('#loader').hide();
-                },
-                error: function (xhr, status, error) {
-                    $('#loader').hide();
-                    
-                    console.error("Error:", error);
+                var rzp1 = new Razorpay(options);
+                rzp1.open();
+            },
+            error: function(xhr) {
+                if(xhr.status === 401) {
+                    window.location.href = xhr.responseJSON.redirect_url;
+                } else {
+                    alert('Something went wrong. Please try again.');
                 }
-            });
-        }
+            }
+        });
     });
 });
 
-        document.getElementById('payment-form').addEventListener('submit', function (event) {
-        // Get the selected payment method
-        const paymentMethod = document.getElementById('payment-method').value;
 
-        // Check if no payment method is selected
-        if (!paymentMethod) {
-            event.preventDefault(); // Prevent form submission
-            document.getElementById('payment-method').classList.add('is-invalid'); // Highlight the field
-            document.getElementById('payment-method-error').style.display = 'block'; // Show error message
-        }
-    });
+</script>
+<script>
+
+    if (!paymentMethod) {
+        event.preventDefault(); // Prevent form submission
+        document.getElementById('payment-method').classList.add('is-invalid'); // Highlight the field
+        document.getElementById('payment-method-error').style.display = 'block'; // Show error message
+    }
 
     // Optionally, you can clear the error when the user selects a valid option
-    document.getElementById('payment-method').addEventListener('change', function () {
-        document.getElementById('payment-method').classList.remove('is-invalid'); // Remove highlight
-        document.getElementById('payment-method-error').style.display = 'none'; // Hide error message
-    });
+document.getElementById('payment-method').addEventListener('change', function () {
+    document.getElementById('payment-method').classList.remove('is-invalid'); // Remove highlight
+    document.getElementById('payment-method-error').style.display = 'none'; // Hide error message
+});
 
 
 $(document).ready(function() {
@@ -689,7 +740,5 @@ $(document).ready(function() {
 });
 
 
-    </script>
-
-@endsection
-
+</script>
+@endpush
