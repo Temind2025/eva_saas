@@ -2,9 +2,9 @@
 
 @if ($errors->any())
     <div {{ $attributes }}>
-        <div class="text-danger fw-bold">
+        {{-- <div class="text-danger fw-bold">
             {{ __('messages.something_went_wrong') }}
-        </div>
+        </div> --}}
 
         <ul class="mt-3 text-danger">
             @foreach ($errors->all() as $error)

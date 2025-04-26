@@ -11,7 +11,7 @@
       @php
       $color = $booking_colors->where('sub_type', $data->status)->first()->name;
       @endphp
-      <span class="text-capitalize badge bg-success-subtle py-2 px-3"><i class="fa-solid fa-circle mx-1" style="color: {{ $color }}"></i> {{ $data->status }}</span>
+      <span class="text-capitalize badge bg-danger-subtle py-2 px-3"> {{ $data->status }}</span>
 @else
       @php
       $color = $booking_colors->where('sub_type', $data->status)->first()->name;

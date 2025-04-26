@@ -27,11 +27,6 @@
                 <span class="error text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label class="form-label" for="value">{{ __('frontend.value') }} <span class="text-danger">*</span></label>
-                <input type="number" name="value" id="value" class="form-control" placeholder="{{ __('frontend.enter_value') }}" value="{{ isset($tax) ? $tax->value : '' }}" min="0">
-                <span class="error text-danger"></span>
-            </div>
 
             <div class="form-group">
                 <label class="form-label" for="type">{{ __('frontend.select_type') }} <span class="text-danger">*</span></label>
@@ -44,6 +39,14 @@
                 </div>
                 <span class="error text-danger"></span>
             </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="value">{{ __('frontend.value') }} <span class="text-danger">*</span></label>
+                <input type="number" name="value" id="value" class="form-control" placeholder="{{ __('frontend.enter_value') }}" value="{{ isset($tax) ? $tax->value : '' }}" min="0">
+                <span class="error text-danger"></span>
+            </div>
+
+            
 
             <div class="form-group">
                 <label class="form-label" for="plan_id">{{ __('frontend.plans') }} <span class="text-danger">*</span></label>

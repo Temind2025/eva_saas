@@ -216,7 +216,7 @@ const validationSchema = yup.object({
     }),
   manager_id:  yup.string().required('Assign Manager is a required field').matches(/^(\+?\d+)?(\s?\d+)*$/, t('messages.phone_invalid')),
   contact_number: yup.string().required(t('messages.contact_number_required')).matches(/^(\+?\d+)?(\s?\d+)*$/, t('messages.phone_invalid')),
-  contact_email: yup.string().required(t('messages.email_required')).matches(EMAIL_REGX, ('messages.email_unique')),
+  contact_email: yup.string().required(t('messages.email_required')).matches(EMAIL_REGX, t('messages.email_unique')),
   address: yup.object({
     address_line_1: yup.string().required(t('messages.address_required')),
     postal_code: yup.string().required(t('messages.postal_code_required')),

@@ -57,16 +57,12 @@ class PackageExport implements FromCollection, WithHeadings,WithStyles
         $query = $query->get();
 
 
-
         $newQuery = $query->map(function ($row) {
             $selectedData = [];
             foreach ($this->columns as $column) {
                 switch ($column) {
                     case 'Status':
-                        $selectedData[$column] = __('messages.inactive');
-                        if ($row[$column]) {
-                            $selectedData[$column] = __('messages.active');
-                        }
+                        $selectedData[$column] = ($row->status == 1) ? __('messages.active') : __('messages.inactive');
                         break;
 
                     case 'Service':

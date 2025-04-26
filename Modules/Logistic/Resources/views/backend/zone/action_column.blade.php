@@ -7,7 +7,7 @@
         id="delete-{{ $module_name }}-{{ $data->id }}" class="btn btn-danger btn-sm" data-type="ajax"
         data-method="DELETE" data-token="{{ csrf_token() }}" data-bs-toggle="tooltip"
         title="{{ __('messages.delete') }}"
-        data-confirm="{{ __('messages.are_you_sure?', ['module' => __('logistic_zone.logistic'), 'name' => $data->name]) }}">
+        data-confirm="{{ __('messages.are_you_sure?', ['module' => __('logistic_zone.singular_title'), 'name' => $data->name]) }}">
         <i class="fa-solid fa-trash"></i></a>
 
 </div>

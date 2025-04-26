@@ -100,7 +100,15 @@ const removeImage = ({ imageViewerBS64, changeFile }) => {
   changeFile.value = null
 }
 
-const changeLogo = (e) => fileUpload(e, { imageViewerBS64: ImageViewer, changeFile: profile_image })
+const changeLogo = (e) => {
+  let file = e.target.files[0]
+  if (file && !['image/jpeg', 'image/jpg', 'image/png', 'image/gif'].includes(file.type)) {
+    window.errorSnackbar(t('messages.invalid_file_type')) // Show error message
+    profileInputRef.value.value = '' // Clear the input field
+    return
+  }
+  fileUpload(e, { imageViewerBS64: ImageViewer, changeFile: profile_image })
+} 
 const removeLogo = () => removeImage({ imageViewerBS64: ImageViewer, changeFile: profile_image })
 
 //  Reset Form
@@ -141,6 +149,7 @@ const validationSchema = yup.object({
       .required(t('messages.phone_number_field_is_required')).matches(/^(\+?\d+)?(\s?\d+)*$/, t('messages.phone_number_field_is_required')),
   show_in_calender: yup.string().required(t('messages.show_in_calender_is_requiredpSubmitButton'))
 })
+
 
 const { handleSubmit, errors, resetForm } = useForm({
   validationSchema

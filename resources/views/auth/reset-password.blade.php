@@ -19,14 +19,14 @@
             <div>
                 <x-label for="email" :value="__('messages.email')" />
 
-                <x-input id="email" class="" type="email" name="email" :value="old('email', $request->email)" required autofocus />
+                <x-input id="email" class="" type="email" name="email" :value="old('email', $request->email)" required autofocus  placeholder="{{__('profile.enter_email')}}"/>
             </div>
 
             <!-- Password -->
             <div class="mt-4">
-                <x-label for="password" :value="__('messages.password')" />
+                <x-label for="password" :value="__('messages.lbl_new_password')" />
 
-                <x-input id="password" class="" type="password" name="password" required />
+                <x-input id="password" class="" type="password" name="password" required placeholder="{{__('messages.placeholder_new_password')}}" />
                 <div id="password-error" class="invalid-feedback">
                     {{ __('messages.password_must_be_between_8_and_14_characters') }}
                 </div>
@@ -34,9 +34,9 @@
 
             <!-- Confirm Password -->
             <div class="mt-4">
-                <x-label for="password_confirmation" :value="__('messages.confirm_password')" />
+                <x-label for="password_confirmation" :value="__('messages.lbl_new_confirm_password')" />
 
-                <x-input id="password_confirmation" class="" type="password" name="password_confirmation" min=8 required />
+                <x-input id="password_confirmation" class="" type="password" name="password_confirmation" min=8 required  placeholder="{{__('messages.placeholder_new_confirm_password')}}"   />
                 <div id="confirmation-error" class="invalid-feedback">
                     {{ __('messages.passwords_do_not_match') }}
                 </div>

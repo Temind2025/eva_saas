@@ -14,7 +14,7 @@
         ><button data-bs-toggle="tooltip" title="Cancel Booking" type="button" @click="changeBookingStatus('cancelled', $t('messages.cancel_confirmation'))" class="btn btn-sm text-danger"><i data-v-f9741b98="" class="fa-regular fa-trash-can"></i></button
       ></strong>
     </div>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close">{{ $t('messages.close') }}</button>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
 </template>
 <script setup>

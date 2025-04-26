@@ -1,5 +1,5 @@
 @if(isset($data->payment))
-
+    
     @if($data->payment->payment_status != 1)
         <select name="branch_for" class="select2 change-select" data-token="{{csrf_token()}}"
             data-url="{{route('backend.bookings.updatePaymentStatus', ['id' => $data->id, 'action_type' => 'update-payment-status'])}}"
@@ -13,7 +13,6 @@
         </select>
 
     @else
-
         @foreach ($payment_status as $key => $value )
 
             @if(isset($data->payment))

@@ -42,7 +42,7 @@
               </div>
             </div>
             <div class="form-group col-md-6" v-if="bookingType !== 'CALENDER_BOOKING' && current_date && employee_id">
-              <Multiselect id="star_time" :placeholder="$t('messages..lbl_select_time')" v-model="start_date_time" :disabled="is_paid || filterStatus(status).is_disabled" :value="start_date_time" v-bind="singleSelectOption" :options="slots" @select="slotSelect" @change="removeSlot" class="form-group"></Multiselect>
+              <Multiselect id="star_time" :placeholder="$t('messages.lbl_select_time')" v-model="start_date_time" :disabled="is_paid || filterStatus(status).is_disabled" :value="start_date_time" v-bind="singleSelectOption" :options="slots" @select="slotSelect" @change="removeSlot" class="form-group"></Multiselect>
             </div>
           </div>
           <div class="form-group">

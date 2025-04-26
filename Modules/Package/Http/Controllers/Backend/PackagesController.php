@@ -202,6 +202,12 @@ class PackagesController extends Controller
 
         $filter = $request->filter;
 
+        if (isset($filter)) {
+            if (isset($filter['column_status'])) {
+                $query->where('status', $filter['column_status']);
+            }
+        }
+
         if (isset($filter['search'])) {
             $searchTerm = $filter['search'];
             $query->where(function ($q) use ($searchTerm) {

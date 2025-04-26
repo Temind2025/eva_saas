@@ -15,8 +15,8 @@
     </div>
 
   <div v-if="is_quick_booking == 1" class="mb-3">
-    <pre class="text-dark">&lt;iframe&nbsp;src=&quot;http://127.0.0.1:8000/quick&#45;booking&quot;&nbsp;frameborder=&quot;0&quot;&nbsp;scrolling=&quot;yes&quot;&nbsp;style=&quot;display:block;&nbsp;width:100%;&nbsp;height:100vh;&quot;&gt;&lt;/iframe&gt;</pre>
-    <h6>{{ $t('quick_booking.lbl_shared_link') }}</h6>
+    <pre class="text-dark mb-0"><code>{{ iframeCode }}</code></pre>
+        <h6>{{ $t('quick_booking.lbl_shared_link') }}</h6>
      <a :href="url" target="_blank">{{ url }}</a>
   </div>
 
@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted} from 'vue'
+import { ref, onMounted , computed} from 'vue'
 import CardTitle from '@/Setting/Components/CardTitle.vue'
 import SubmitButton from './Forms/SubmitButton.vue'
 import { useRequest } from '@/helpers/hooks/useCrudOpration'
@@ -35,6 +35,15 @@ import { useField, useForm } from 'vee-validate'
 import * as yup from 'yup';
 
 const { storeRequest } = useRequest()
+const baseUrl = document.querySelector('meta[name="baseUrl"]').getAttribute('content');
+const quickBookingUrl = computed(() => `${baseUrl}/quick-booking`)
+const iframeCode = computed(() => {
+  return `<iframe 
+  src="${quickBookingUrl.value}" 
+  frameborder="0" 
+  scrolling="yes" 
+  style="display:block; width:100%; height:100vh;"></iframe>`.replace(/\s+/g, ' ').trim()
+})
 
 const url = ref('') // Set the URL
 const IS_SUBMITED = ref(false)

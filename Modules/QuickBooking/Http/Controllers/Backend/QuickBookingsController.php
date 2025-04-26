@@ -27,6 +27,7 @@ class QuickBookingsController extends Controller
 
     public function index()
     {
+        // dd('quick-booking');
         if (! setting('is_quick_booking')) {
             return abort(404);
         }

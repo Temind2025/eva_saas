@@ -853,7 +853,7 @@
                       confirmButtonColor: "#d33",
                       cancelButtonColor: "#3085d6",
                       confirmButtonText: "{{ __('messages.yes_delete') }}",
-                      cancelButtonText: "{{ __('messages.cancel') }}"
+                      cancelButtonText: "{{ __('messages.cancel') }}",
                   }).then((result) => {
                       if (result.isConfirmed) {
                           $(this).closest('.settings-box').remove();

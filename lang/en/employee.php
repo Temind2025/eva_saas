@@ -59,7 +59,7 @@ return [
     'Twitter_link'=>'Enter Twitter Link',
     'dribble_link'=>'Enter Dribbble Link',
     'select_employee'=>'Select an employee',
-    'singular_title_manager'=>'Manager',
+    'singular_title_manager'=>'Staff',
 
 
 ];
