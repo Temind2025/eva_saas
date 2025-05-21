@@ -1,1 +1,0 @@
- <x-frontend::card.card_compare_plan :data="$data" :menus="$menus" :limits="$limits"/>
