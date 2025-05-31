@@ -26,6 +26,7 @@ class MailMailableSend extends Mailable
      */
     public function __construct($mailable, $data, $type = '')
     {
+
         $this->mailable = $mailable ?? '';
         $this->data = $data;
         $this->type = $type;
@@ -40,8 +41,10 @@ class MailMailableSend extends Mailable
 
     public function content()
     {
-        $this->templateData = $this->mailable->defaultNotificationTemplateMap->template_detail;
 
+        \Log::info($this->mailable);
+
+        $this->templateData = $this->mailable->template_detail;
         foreach ($this->data as $key => $value) {
         
                 $this->templateData = str_replace('[[ '.$key.' ]]', $this->data[$key], $this->templateData);

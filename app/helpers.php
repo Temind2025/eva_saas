@@ -30,6 +30,7 @@ function mail_footer($type, $notify_message)
     return [
         'notification_type' => $type,
         'notification_message' => $notify_message,
+        'admin_name'=> auth()->user() ? auth()->user()->full_name ?? default_user_name() : '',
         'logged_in_user_fullname' => auth()->user() ? auth()->user()->full_name ?? default_user_name() : '',
         'logged_in_user_role' => auth()->user() ? auth()->user()->getRoleNames()->first()->name ?? '-' : '',
         'company_name' => setting('app_name'),
@@ -42,6 +43,7 @@ function mail_footer($type, $notify_message)
 
 function sendNotification($data)
 {
+   
     $mailable = \Modules\NotificationTemplate\Models\NotificationTemplate::where('type', $data['notification_type'])->with('defaultNotificationTemplateMap')->first();
     if ($mailable != null && $mailable->to != null) {
         $mails = json_decode($mailable->to);
@@ -50,6 +52,7 @@ function sendNotification($data)
             $data['type'] = $data['notification_type'];
             $booking = isset($data['booking']) ? $data['booking'] : null;
             $order = isset($data['order']) ? $data['order'] : null;
+            $data['vendor_id']=auth()->user() ? auth()->user()->id : null;
             $subscription = isset($data['subscription']) ? $data['subscription'] : null;
             if (isset($booking) && $booking != null) {
                 $data['id'] = $booking['id'];
@@ -63,6 +66,7 @@ function sendNotification($data)
                 $data['booking_duration'] = $booking['booking_duration'];
                 $data['venue_address'] = $booking['venue_address'];
                 $data['notification_group'] = 'booking';
+                $data['vendor_id']=auth()->user() ? auth()->user()->id : null;
                 $data['email'] = $booking['email'];
                 $data['mobile'] = $booking['mobile'];
                 $data['transaction_type'] = $booking['transaction_type'];
@@ -92,6 +96,7 @@ function sendNotification($data)
                 $data['notification_group'] = 'shop';
                 $data['id'] = $order['id'];
                 $data['user_id'] = $order['user_id'];
+                $data['vendor_id']=auth()->user() ? auth()->user()->id : null;
                 $data['order_code'] = $order['order_code'];
                 $data['user_name'] = $order['user_name'];
                 $data['order_date'] = $order['order_date'];
@@ -99,9 +104,12 @@ function sendNotification($data)
                 $data['site_url'] = env('APP_URL');
                 unset($data['order']);
             }elseif (isset($subscription) && $subscription != null) {
+
+             
                 $data['id'] = $subscription['id'];
                 $data['user_id'] = $subscription['user_id'];
                 $data['plan_id'] = $subscription['plan_id'];
+                $data['vendor_id']=$subscription['user_id'];
                 $data['name'] = $subscription['plan']->name;
                 $data['identifier'] = $subscription['identifier'];
                 $data['type'] = $subscription['type'];
@@ -116,6 +124,7 @@ function sendNotification($data)
 
             }
 
+        
             switch ($mailTo) {
 
                 case 'super admin':
@@ -134,18 +143,24 @@ function sendNotification($data)
 
                     break;
                 case 'admin':
-                case 'demo_admin':
 
-                    $admin = \App\Models\User::role(['admin','demo_admin'])->first();
-                    $data['user_type'] = $admin->user_type;
-                    $data['admin_id'] = $admin->id;
-                    if (isset($admin->email)) {
-                        try {
-                            $admin->notify(new \App\Notifications\CommonNotification($data['notification_type'], $data));
-                        } catch (\Exception $e) {
-                            Log::error($e);
+        
+                    $admin = \App\Models\User::role('admin')->where('id', $data['vendor_id'])->first();
+
+                    if( $admin){
+
+                        $data['user_type'] = $admin->user_type;
+                        $data['admin_id'] = $admin->id;
+                        if (isset($admin->email)) {
+                            try {
+                                $admin->notify(new \App\Notifications\CommonNotification($data['notification_type'], $data));
+                            } catch (\Exception $e) {
+                                Log::error($e);
+                            }
                         }
-                    }
+    
+    
+                        }
 
                     break;
 
@@ -166,6 +181,9 @@ function sendNotification($data)
                     break;
 
                 case 'user':
+
+                    
+
                     if (isset($data['user_id'])) {
                         $user = \App\Models\User::find($data['user_id']);
                         $data['user_type'] = $user->user_type;
@@ -1469,7 +1487,7 @@ function defaultCurrencySymbol()
 
 function sendNotificationOnUserRegistration($user)
 {
-    $type = 'user_registered';
+    $type = 'vendor_registered';
 
     $messageTemplate = 'A new user, [[user_name]], has successfully registered.';
 

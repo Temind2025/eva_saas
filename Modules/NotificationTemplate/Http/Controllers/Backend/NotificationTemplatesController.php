@@ -135,20 +135,20 @@ class NotificationTemplatesController extends Controller
     {
         // notification templete as per role :admin , super admin
         if(auth()->user()->hasRole('super admin')){
-            $allowedNames = ['change_password', 'forget_email_password', 'purchase_plan', 'user_registered','cancel_subscription','new_subscription'];
+            $allowedNames = ['change_password', 'forget_email_password', 'purchase_plan', 'vendor_registered','cancel_subscription','new_subscription'];
 
             $query = NotificationTemplate::query()
                 ->with('defaultNotificationTemplateMap')
                 ->whereIn('name', $allowedNames)
                 ->where('created_by', auth()->id());
         } else if (auth()->user()->hasRole('admin')) {
-            $allowedNames = ['new_subscription', 'cancel_subscription','change_password', 'purchase_plan', 'user_registered'];
+            $allowedNames = ['new_subscription', 'cancel_subscription','change_password', 'purchase_plan', 'vendor_registered'];
             $query = NotificationTemplate::query()
                 ->with('defaultNotificationTemplateMap')
                 ->whereNotIn('name', $allowedNames)
                 ->where('created_by', auth()->id());
         } else {
-            $allowedNames = ['change_password', 'purchase_plan', 'user_registered'];
+            $allowedNames = ['change_password', 'purchase_plan', 'vendor_registered'];
             
             $query = NotificationTemplate::query()->with('defaultNotificationTemplateMap')->whereNotIn('name', $allowedNames)->where('created_by', auth()->id());;
         }
@@ -500,8 +500,7 @@ class NotificationTemplatesController extends Controller
         $userType = $request->input('user_type');
         $type = $request->input('type');
 
-        $ids = NotificationTemplate::where('type', $type)->pluck('id');
-
+        $ids = NotificationTemplate::where('type', $type)->where('id', $request->id)->pluck('id');
         $data = NotificationTemplateContentMapping::with('template')->whereIn('template_id', $ids)
             ->where('user_type', $userType)
             ->first();

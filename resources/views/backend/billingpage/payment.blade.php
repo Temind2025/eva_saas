@@ -26,7 +26,7 @@
                                     <span class="text-muted">
                                         / {{ $plan->duration ?? '-' }}
                                     @if($plan->type == 'Monthly')
-                                        <span class="text-muted"> {{ __('frontend.month') }}
+                                        <span class="text-muted"> {{ __('frontend.Month') }}
                                         </span>
                                     @elseif($plan->type == 'Weekly')
                                         <span class="text-muted"> {{ __('frontend.week') }}
@@ -95,7 +95,7 @@
                                     @endif
                                 @endforeach
                             </select>
-                            <div class="invalid-feedback" id="payment-method-error" style="display:none; ">
+                            <div class="invalid-feedback" id="payment-method-error" style="display:none; color: red; ">
                                 {{__('messages.please_select_payment_method')}}
                             </div>
                         </div>

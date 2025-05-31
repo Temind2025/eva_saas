@@ -1,43 +1,83 @@
 <template>
   <form @submit="formSubmit">
     <div class="offcanvas offcanvas-end" tabindex="-1" id="form-offcanvas" aria-labelledby="form-offcanvasLabel">
-      <FormHeader :currentId="currentId" :editTitle="$t('messages.edit') + ' ' + $t('messages.tax')" :createTitle="$t('messages.new')+ ' ' + $t('messages.tax')"></FormHeader>
+      <FormHeader :currentId="currentId" :editTitle="$t('messages.edit') + ' ' + $t('messages.tax')" :createTitle="$t('messages.new')+ ' ' + $t('messages.tax')"/>
       <div class="offcanvas-body">
         <div class="row">
           <div class="col-12">
             <div class="form-group">
-              <InputField class="col-md-12" :is-required="true" :label="$t('tax.lbl_title')" :placeholder="$t('tax.enter_title')" v-model="title" :error-message="errors.title" :error-messages="errorMessages['title']"></InputField>
-              <InputField class="col-md-12" :is-required="true" :label="$t('tax.lbl_value')" :placeholder="$t('tax.enter_value')"  v-model="value" :error-message="errors.value" :error-messages="errorMessages['value']"></InputField>
+              <InputField
+                class="col-md-12"
+                :is-required="true"
+                :label="$t('tax.lbl_title')"
+                :placeholder="$t('tax.enter_title')"
+                v-model="title"
+                :error-message="errors.title"
+                :error-messages="errorMessages['title']"
+              />
+
+              <label class="form-label mt-3" for="type">{{ $t('tax.lbl_select_type') }}<span class="text-danger">*</span></label>
+              <Multiselect
+                id="type"
+                v-model="type"
+                :value="type"
+                :placeholder="$t('tax.select_type')"
+                v-bind="type_data"
+                class="form-group"
+              />
+              <span class="text-danger">{{ errors.type }}</span>
+
+              <InputField
+                class="col-md-12 mt-3"
+                :is-required="true"
+                :label="$t('tax.lbl_value')"
+                :placeholder="$t('tax.enter_value')"
+                v-model="value"
+                :error-message="errors.value"
+                :error-messages="errorMessages['value']"
+              />
             </div>
           </div>
 
-
           <div class="col-12 mb-3">
-            <label class="form-label" for="name">{{ $t('tax.lbl_select_type') }}<span class="text-danger">*</span></label>
-        <Multiselect id="type" v-model="type" :value="type" :placeholder="$t('tax.select_type')"  v-bind="type_data" class="form-group"></Multiselect>
-        <span class="text-danger">{{ errors.type }}</span>
-      </div>
-
-      <div class="col-12 mb-3">
             <label class="form-label" for="module_type">{{ $t('tax.lbl_module_type') }}</label>
-            <Multiselect id="module_type" :placeholder="$t('tax.module_type')" v-model="module_type" :value="module_type" v-bind="module_type_data" class="form-group"></Multiselect>
+            <Multiselect
+              id="module_type"
+              :placeholder="$t('tax.module_type')"
+              v-model="module_type"
+              :value="module_type"
+              v-bind="module_type_data"
+              class="form-group"
+            />
             <span class="text-danger">{{ errors.module_type_data }}</span>
-      </div>
+          </div>
+
           <div class="col-12 my-3">
             <label class="form-label" for="category-status">{{ $t('tax.lbl_status') }}</label>
-              <div class="d-flex justify-content-between align-items-center form-control">
-                <label class="form-label mb-0" for="category-status">{{ $t('tax.lbl_status') }}</label>
-                <div class="form-check form-switch">
-                  <input class="form-check-input" :value="status" :true-value="1" :false-value="0" :checked="status" name="status" id="category-status" type="checkbox" v-model="status" />
-                </div>
+            <div class="d-flex justify-content-between align-items-center form-control">
+              <label class="form-label mb-0" for="category-status">{{ $t('tax.lbl_status') }}</label>
+              <div class="form-check form-switch">
+                <input
+                  class="form-check-input"
+                  :value="status"
+                  :true-value="1"
+                  :false-value="0"
+                  :checked="status"
+                  name="status"
+                  id="category-status"
+                  type="checkbox"
+                  v-model="status"
+                />
               </div>
             </div>
+          </div>
         </div>
       </div>
-    <FormFooter :IS_SUBMITED="IS_SUBMITED"></FormFooter>
+      <FormFooter :IS_SUBMITED="IS_SUBMITED" />
     </div>
   </form>
 </template>
+
 
 <script setup>
 import { ref, onMounted } from 'vue'

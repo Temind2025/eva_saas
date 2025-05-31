@@ -582,7 +582,7 @@ watch(() => midtrans_payment_method.value, (value) => {
 const display_submit_message = (res) => {
   IS_SUBMITED.value = false
   if (res.status) {
-    window.successSnackbar(res.message)
+    window.successSnackbar("Payment Method updated successfully!") 
   } else {
     window.errorSnackbar(res.message)
     errorMessages.value = res.errors

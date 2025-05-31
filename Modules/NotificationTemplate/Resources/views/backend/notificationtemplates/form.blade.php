@@ -200,12 +200,14 @@
             $('select[name="defaultNotificationTemplateMap[user_type]"]').on('change', function() {
                 var userType = $(this).val();
                 var type = $('select[name="type"]').val();
+                var editId = $('input[name="id"]').val(); 
                 $.ajax({
                     url: "{{ route('backend.notificationtemplates.fetchnotification_data') }}",
                     method: "GET",
                     data: {
                         user_type: userType,
-                        type: type
+                        type: type,
+                        id: editId 
                     },
                     success: function(response) {
                         if (response.success) {

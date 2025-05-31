@@ -12,6 +12,7 @@ use Modules\NotificationTemplate\Trait\NotificationTemplateTrait;
 class NotificationTemplateSeeder extends Seeder
 {
     use NotificationTemplateTrait;
+
     /**
      * Run the database seeds.
      *
@@ -21,6 +22,7 @@ class NotificationTemplateSeeder extends Seeder
     {
         // Disable foreign key checks!
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
         /*
          * NotificationTemplates Seed
          * ------------------
@@ -28,18 +30,17 @@ class NotificationTemplateSeeder extends Seeder
 
         // DB::table('notificationtemplates')->truncate();
 
-
         $types = [
-            // User Registration Notification Types
+            // Vendor Registration Notification Types
             [
                 'type' => 'notification_type',
-                'value' => 'user_registered',
-                'name' => 'User Registered',
+                'value' => 'vendor_registered',
+                'name' => 'Vendor Registered',
             ],
             [
                 'type' => 'notification_param_button',
-                'value' => 'user_email',
-                'name' => 'User Email',
+                'value' => 'vendor_email',
+                'name' => 'Vendor Email',
             ],
             [
                 'type' => 'notification_param_button',
@@ -100,14 +101,14 @@ class NotificationTemplateSeeder extends Seeder
             [
                 'type' => 'notification_type',
                 'value' => 'change_password',
-                'name' => 'Chnage Password',
+                'name' => 'Change Password',
             ],
             [
                 'type' => 'notification_type',
                 'value' => 'forget_email_password',
                 'name' => 'Forget Email/Password',
             ],
-          
+
             [
                 'type' => 'notification_param_button',
                 'value' => 'id',
@@ -115,8 +116,8 @@ class NotificationTemplateSeeder extends Seeder
             ],
             [
                 'type' => 'notification_param_button',
-                'value' => 'user_name',
-                'name' => 'Customer Name',
+                'value' => 'vendor_name',
+                'name' => 'Vendor Name',
             ],
             [
                 'type' => 'notification_param_button',
@@ -180,13 +181,13 @@ class NotificationTemplateSeeder extends Seeder
             ],
             [
                 'type' => 'notification_param_button',
-                'value' => 'user_id',
-                'name' => 'User\' ID',
+                'value' => 'vendor_id',
+                'name' => 'Vendor\' ID',
             ],
             [
                 'type' => 'notification_param_button',
-                'value' => 'user_password',
-                'name' => 'User Password',
+                'value' => 'vendor_password',
+                'name' => 'Vendor Password',
             ],
             [
                 'type' => 'notification_param_button',
@@ -213,7 +214,7 @@ class NotificationTemplateSeeder extends Seeder
                 'value' => 'user',
                 'name' => 'User',
             ],
-            
+
             [
                 'type' => 'notification_to',
                 'value' => 'admin',
@@ -230,7 +231,6 @@ class NotificationTemplateSeeder extends Seeder
             Constant::updateOrCreate(['type' => $value['type'], 'value' => $value['value']], $value);
         }
 
-
         $adminUsers = User::whereIn('user_type', ['super admin', 'admin'])->get();
 
         // Enable foreign key checks!
@@ -241,7 +241,6 @@ class NotificationTemplateSeeder extends Seeder
 
         $adminUsers->map(function ($admin) {
             $this->addNotificationTemplate($admin->id);
-        }); 
-
+        });
     }
 }

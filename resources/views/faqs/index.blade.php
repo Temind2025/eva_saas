@@ -121,5 +121,10 @@
             var route = "{{ route('backend.faq.delete', 'faq_id') }}".replace('faq_id', faq_id);
             confirmDelete(route, faq_id);
         }
+        $(document).on('click', '[data-bs-toggle="tooltip"]', function () {
+            $(this).tooltip('dispose');
+            $('.tooltip').remove();
+        });
+
     </script>
 @endpush

@@ -65,11 +65,11 @@
                 name: 'value',
                 title: "{{ __('frontend.value') }}"
             },
-            {
-                data: 'type',
-                name: 'type',
-                title: "{{ __('frontend.type') }}"
-            },
+            // {
+            //     data: 'type',
+            //     name: 'type',
+            //     title: "{{ __('frontend.type') }}"
+            // },
             {
                 data: 'plans',
                 name: 'plans',
@@ -93,24 +93,51 @@
             searchable: false,
             title: "{{ __('frontend.action') }}",
             render: function(data, type, row) {
-                let buttons = ` <button class="btn btn-primary btn-sm btn-edit" onclick="editTax(${row.id})" title="Edit" data-bs-toggle="tooltip">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                                                       <a href="{{ route('backend.plan.tax.delete', '') }}/${row.id}"
-           id="delete-blog-${row.id}"
-           class="btn btn-danger btn-sm"
-           data-type="ajax"
-           data-method="DELETE"
-           data-token="{{ csrf_token() }}"
-           data-bs-toggle="tooltip"
-           title="{{ __('messages.delete') }}"
-            data-confirm="{{ __('messages.are_you_sure?', ['module' => __('report.lbl_taxes'), 'name' => '']) }} ">
-            <i class="fa-solid fa-trash"></i>
-        </a>
+    let buttons = `
+        <button class="btn btn-primary btn-sm btn-edit" onclick="editTax(${row.id})" title="Edit" data-bs-toggle="tooltip">
+            <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn btn-danger btn-sm btn-delete me-1" 
+            onclick="confirmDelete(${row.id}, '${row.title.replace(/'/g, "\\'")}', '{{ $module_title }}')" 
+            title="{{ __('messages.delete') }}" data-bs-toggle="tooltip">
+            <i class="fas fa-trash"></i>
+        </button>
     `;
-                return buttons;
-            }
+    return buttons;
+}
         }];
+        function confirmDelete(id, name, moduleTitle) {
+    Swal.fire({
+        title: `Are you sure you want to delete this ${name} ${moduleTitle}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '{{ __("messages.yes_delete") }}',
+        cancelButtonText: '{{ __("messages.cancel") }}'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const route = "{{ route('backend.plan.tax.delete', '__ID__') }}".replace('__ID__', id);
+
+            $.ajax({
+                url: route,
+                type: 'POST',
+                data: {
+                    _method: 'DELETE',
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    $('#datatable').DataTable().ajax.reload(null, false);
+                    Swal.fire('{{ __("messages.deleted") }}', response.message, 'success');
+                },
+                error: function() {
+                    Swal.fire('{{ __("messages.error") }}', '{{ __("messages.delete_failed") }}', 'error');
+                }
+            });
+        }
+    });
+}
+        
 
 
 
@@ -160,10 +187,18 @@
             window.location.href = route;
         }
 
+        // function deleteTax(tax_id) {
+        //     var route = "{{ route('backend.plan.tax.delete', 'tax_id') }}".replace('tax_id', tax_id);
+        //     confirmDelete(route, tax_id);
+        // }
         function deleteTax(tax_id) {
+            $('.btn-danger').tooltip('dispose');  
+            $('.tooltip').remove();
+
             var route = "{{ route('backend.plan.tax.delete', 'tax_id') }}".replace('tax_id', tax_id);
             confirmDelete(route, tax_id);
         }
+
         $('#approve-button').on('click', function() {
             const selectedIds = [];
             $('input[name="select_payment"]:checked').each(function() {
@@ -197,5 +232,10 @@
                 alert('Please select at least one payment to approve.');
             }
         });
+        $(document).on('click', '[data-bs-toggle="tooltip"]', function () {
+            $(this).tooltip('dispose');
+            $('.tooltip').remove();
+        });
+
     </script>
 @endpush

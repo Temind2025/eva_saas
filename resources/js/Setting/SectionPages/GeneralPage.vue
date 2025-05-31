@@ -12,7 +12,7 @@
       <InputField :label="$t('setting_general_page.lbl_uitext')" :value="ui_text" v-model="ui_text" :errorMessage="errors.ui_text"></InputField>
       <InputField :label="$t('setting_general_page.lbl_contact_no')" :value="helpline_number" v-model="helpline_number" :errorMessage="errors.helpline_number" :isRequired="true"></InputField>
 
-      <InputField :label="$t('setting_general_page.lbl_inquiry_email')" :value="inquriy_email" v-model="inquriy_email" :errorMessage="errors.inquriy_email"></InputField>
+      <InputField :label="$t('setting_general_page.lbl_inquiry_email')" :value="inquriy_email" v-model="inquriy_email" :errorMessage="errors.inquriy_email" :isRequired="true"></InputField>
       <InputField :label="$t('setting_general_page.lbl_site_description')" :value="site_description" v-model="site_description" :errorMessage="errors.site_description"></InputField>
     </div>
     <div class="row mt-4">
@@ -261,13 +261,13 @@ const { t } = useI18n();
 const validationSchema = yup.object({
   app_name: yup.string().required(t('messages.app_name_required')),
   footer_text: yup.string().required(t('messages.footer_text_required')),
-  helpline_number: yup.string().matches(/^\d+$/, t('messages.only_numbers_allowed')),
+  helpline_number: yup.string().required(t('messages.helpline_number_required')).matches(/^\d+$/, t('messages.only_numbers_allowed')),
   copyright_text: yup.string().required(t('messages.copyright_text_required')),
   inquriy_email: yup
     .string()
+    .required(t('messages.inquriy_email_required'))
     .test('is-string', t('messages.email_must_be_string'), (value) => !numberRegex.test(value))
     .email(t('messages.valid_email')),
-  site_description: yup.string()
 })
 
 const { handleSubmit, errors, resetForm } = useForm({ validationSchema })
@@ -304,7 +304,7 @@ onMounted(() => {
 const display_submit_message = (res) => {
   IS_SUBMITED.value = false
   if (res.status) {
-    window.successSnackbar(res.message)
+    window.successSnackbar("General Setting updated successfully!") 
   } else {
     window.errorSnackbar(res.message)
   }

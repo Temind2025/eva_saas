@@ -39,7 +39,7 @@ const store = useSetting()
 const display_submit_message = (res) => {
   IS_SUBMITED.value = false
   if (res.status) {
-    window.successSnackbar(res.message)
+    window.successSnackbar("Customization Setting updated successfully!")
   } else {
     window.errorSnackbar(res.message)
   }

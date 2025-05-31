@@ -12,7 +12,7 @@
     <meta name="description" content="{{ $description ?? '' }}">
     <meta name="keywords" content="{{ $keywords ?? '' }}">
     <meta name="author" content="{{ $author ?? '' }}">
-    <meta name="baseUrl" content="{{env('APP_URL')}}" />
+    <meta name="baseUrl" content="{{url('/')}}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -1,6 +1,6 @@
 @extends('backend.layouts.app')
 
-@section('title', __($module_action . ' ' . $module_title))
+@section('title', __($module_title))
 
 @section('content')
     <div class="card mb-4">
@@ -11,12 +11,13 @@
                     <table id="datatable" class="table table-bordered">
                         <thead>
                             <tr>
+                               <th>
+                                    {{ __('notification.lbl_type') }}
+                                </th>
                                 <th>
                                     {{ __('notification.lbl_text') }}
                                 </th>
-                                <th>
-                                    {{ __('notification.lbl_module') }}
-                                </th>
+                               
                                 <th>
                                     {{ __('notification.lbl_update') }}
                                 </th>
@@ -25,6 +26,8 @@
 
                         <tbody>
                             @forelse($$module_name as $module_name_singular)
+
+                        
                                 <?php
                                 $row_class = '';
                                 $span_class = '';
@@ -33,15 +36,21 @@
                                     $span_class = 'fw-bold';
                                 }
                                 ?>
+
+
                                 <tr class="{{ $row_class }}">
+
+        
+                                    <td>
+                                 
+                                        {{ $module_name_singular->data['data']['type'] ?? '' }}
+                                    </td>
                                     <td>
                                             <span class="{{ $span_class }}">
-                                                {{ $module_name_singular->data['subject'] }}
+                                                {!! $module_name_singular['data']['data']['message'] ?? '' !!}
                                             </span>
                                     </td>
-                                    <td>
-                                        {{ $module_name_singular->data['data']['service_name'] }}
-                                    </td>
+                                    
                                     <td>
                                         {{ $module_name_singular->updated_at->diffForHumans() }}
                                     </td>

@@ -17,10 +17,12 @@ use Modules\Service\Models\Service;
 use Modules\Subscriptions\Models\Subscription;
 use Modules\Subscriptions\Models\Plan;
 use App\Models\User;
+use Modules\Subscriptions\Trait\SubscriptionTrait;
 use Modules\Subscriptions\Transformers\SubscriptionResource;
 
 class FrontendController extends Controller
 {
+    use SubscriptionTrait;
     /**
      * Display a listing of the resource.
      */
@@ -267,25 +269,24 @@ class FrontendController extends Controller
     {
         try {
             $planId = $request->input('plan_id');
-            $cancelsubscription = Subscription::where('user_id', auth()->id())
+            $cancelsubscriptions = Subscription::where('user_id', auth()->id())
                 ->where('id', $request->id)
                 ->where('status', 'active')
                 ->update(['status' => 'cancel']);
+
+            $cancelsubscription = Subscription::where('user_id', auth()->id())->where('id', $request->id)->first();
             $response = new SubscriptionResource($cancelsubscription);
-            $otherSubscription=Subscription::where('user_id', auth()->id())
-                ->where('status', 'active')->get();
 
-            if($otherSubscription->isEmpty()){
-
+        
                 $user=User::where('id',auth()->id() )->first();
 
                 $user->update(['is_subscribe'=>0]);
 
-            }
+            
             try {
                 $type = 'cancel_subscription';
                 $messageTemplate = 'User [[plan_id]] has been cancel subscription.';
-                $notify_message = str_replace('[[plan_id]]', $response->plan_id, $messageTemplate);
+                $notify_message = str_replace('[[plan_id]]', $cancelsubscription->name, $messageTemplate);
                 $this->sendNotificationOnsubscription($type, $notify_message, $response);
             } catch (\Exception $e) {
                 \Log::error($e->getMessage());

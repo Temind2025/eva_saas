@@ -53,6 +53,9 @@ class upgradePlanController extends Controller
 
         $currentPlanId = $activeSubscriptions ? $activeSubscriptions->plan_id : null;
         $subscriptions = Subscription::where('user_id', auth()->id())
+        ->whereHas('plan', function ($query) {
+            $query->where('identifier', '!=', 'free');
+        })
         ->with('subscription_transaction')
         ->orderBy('created_at', 'desc')
         ->get();

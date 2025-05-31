@@ -230,7 +230,7 @@ class QuickBookingsController extends Controller
             }
 
         try {
-            $notify_type = 'cancel_booking';
+            $notify_type = 'new_booking';
             $messageTemplate = 'New booking #[[booking_id]] has been booked.';
             $notify_message = str_replace('[[booking_id]]', $booking->id, $messageTemplate);
             $this->sendNotificationOnBookingUpdate($notify_type,$notify_message,$booking);

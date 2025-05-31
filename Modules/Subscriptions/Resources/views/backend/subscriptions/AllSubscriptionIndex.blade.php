@@ -1,164 +1,170 @@
 @extends('backend.layouts.app')
 
 @section('title')
-    {{ __($module_action) }} 
+{{ __($module_action) }}
 @endsection
 
 
 @push('after-styles')
-    <link rel="stylesheet" href="{{ mix('modules/constant/style.css') }}">
+<link rel="stylesheet" href="{{ mix('modules/constant/style.css') }}">
 @endpush
 @section('content')
-    <div class="row mb-4">
-        <!-- Total Subscriptions Card -->
-        <div class="col-md-3">
+<div class="row mb-4">
+    <!-- Total Subscriptions Card -->
+    <div class="col-md-3">
+        <div class="dashboard-cards services p-5 bg-primary-subtle rounded">
+            <div class="d-flex align-items-center justify-content-between title">
+                <h2 class="text-primary fw-semibold mb-0">
+                    {{ $activeSubscriptions + $expiredSubscriptions + $pendingSubscriptions }}
+                </h2>
+                <div class="dashboard-icon fs-4" data-bs-toggle="tooltip"
+                    data-bs-title="{{ __('dashboard.total_subscriptions') }}">
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+            </div>
+            <h5 class="mb-0">{{ __('dashboard.total_subscriptions') }}</h5>
+        </div>
+    </div>
+
+    <!-- Active Subscriptions Card -->
+    <div class="col-md-3">
+        <a href="{{ route('backend.subscriptions.index') }}" class="text-decoration-none">
             <div class="dashboard-cards services p-5 bg-primary-subtle rounded">
                 <div class="d-flex align-items-center justify-content-between title">
-                    <h2 class="text-primary fw-semibold mb-0">
-                        {{ $activeSubscriptions + $expiredSubscriptions + $pendingSubscriptions }}
-                    </h2>
-                    <div class="dashboard-icon fs-4" data-bs-toggle="tooltip" data-bs-title="{{ __('dashboard.total_subscriptions') }}">
-                        <i class="fa-solid fa-bars"></i>
+                    <h2 class="text-primary fw-semibold mb-0">{{ $activeSubscriptions ?? 0 }}</h2>
+                    <div class="dashboard-icon fs-4" data-bs-toggle="tooltip"
+                        data-bs-title="{{ __('dashboard.total_active_subscriptions') }}">
+                        <i class="fa-solid fa-web-awesome"></i>
                     </div>
                 </div>
-                <h5 class="mb-0">{{ __('dashboard.total_subscriptions') }}</h5>
+                <h5 class="mb-0">{{ __('dashboard.total_active_subscriptions') }}</h5>
             </div>
-        </div>
-
-        <!-- Active Subscriptions Card -->
-        <div class="col-md-3">
-            <a href="{{ route('backend.subscriptions.index') }}" class="text-decoration-none">
-                <div class="dashboard-cards services p-5 bg-primary-subtle rounded">
-                    <div class="d-flex align-items-center justify-content-between title">
-                        <h2 class="text-primary fw-semibold mb-0">{{ $activeSubscriptions ?? 0 }}</h2>
-                        <div class="dashboard-icon fs-4" data-bs-toggle="tooltip" data-bs-title="{{ __('dashboard.total_active_subscriptions') }}">
-                            <i class="fa-solid fa-web-awesome"></i>
-                        </div>
-                    </div>
-                    <h5 class="mb-0">{{ __('dashboard.total_active_subscriptions') }}</h5>
-                </div>
-            </a>
-        </div>
-
-        <!-- Expired Subscriptions Card -->
-        <div class="col-md-3">
-            <a href="{{ route('backend.subscriptions.expired') }}" class="text-decoration-none">
-                <div class="dashboard-cards services p-5 bg-primary-subtle rounded">
-                    <div class="d-flex align-items-center justify-content-between title">
-                        <h2 class="text-primary fw-semibold mb-0">{{ $expiredSubscriptions ?? 0 }}</h2>
-                        <div class="dashboard-icon fs-4" data-bs-toggle="tooltip" data-bs-title="{{ __('dashboard.total_expired_subscriptions') }}">
-                            <i class="fa-solid fa-calendar-xmark"></i>
-                            
-                        </div>
-                    </div>
-                    <h5 class="mb-0">{{ __('dashboard.total_expired_subscriptions') }}</h5>
-                </div>
-            </a>
-        </div>
-
-        <!-- Pending Subscriptions Card -->
-        <div class="col-md-3">
-            <a href="{{ route('backend.subscriptions.pending') }}" class="text-decoration-none">
-                <div class="dashboard-cards services p-5 bg-primary-subtle rounded">
-                    <div class="d-flex align-items-center justify-content-between title">
-                        <h2 class="text-primary fw-semibold mb-0">{{ $pendingSubscriptions ?? 0 }}</h2>
-                        <div class="dashboard-icon fs-4" data-bs-toggle="tooltip" data-bs-title="{{ __('dashboard.total_pending_subscriptions') }}">
-                            <i class="fa-solid fa-exclamation"></i>
-                            
-                        </div>
-                    </div>
-                    <h5 class="mb-0">{{ __('dashboard.total_pending_subscriptions') }}</h5>
-                </div>
-            </a>
-        </div>
+        </a>
     </div>
 
-    <div class="card">
-        <div class="card-header">
-        
-            
-        </div>
-        <div class="card-body">
-            <div class="row mb-3">
-                <div class="col-md-2">
-                    <select id="plan-filter" class="form-select select2">
-                        <option value="">{{__('messages.select_plan')}}</option>
-                        @foreach($plans as $plan)
-                            <option value="{{ $plan->id }}" {{ request()->get('plan_id') == $plan->id ? 'selected' : '' }}>
-                                {{ $plan->name }}
-                                ({{ $plan->duration . ' ' . str_replace('ly', '', $plan->type) }})
+    <!-- Expired Subscriptions Card -->
+    <div class="col-md-3">
+        <a href="{{ route('backend.subscriptions.expired') }}" class="text-decoration-none">
+            <div class="dashboard-cards services p-5 bg-primary-subtle rounded">
+                <div class="d-flex align-items-center justify-content-between title">
+                    <h2 class="text-primary fw-semibold mb-0">{{ $expiredSubscriptions ?? 0 }}</h2>
+                    <div class="dashboard-icon fs-4" data-bs-toggle="tooltip"
+                        data-bs-title="{{ __('dashboard.total_expired_subscriptions') }}">
+                        <i class="fa-solid fa-calendar-xmark"></i>
 
-                            </option>
-                        @endforeach
+                    </div>
+                </div>
+                <h5 class="mb-0">{{ __('dashboard.total_expired_subscriptions') }}</h5>
+            </div>
+        </a>
+    </div>
+
+    <!-- Pending Subscriptions Card -->
+    <div class="col-md-3">
+        <a href="{{ route('backend.subscriptions.pending') }}" class="text-decoration-none">
+            <div class="dashboard-cards services p-5 bg-primary-subtle rounded">
+                <div class="d-flex align-items-center justify-content-between title">
+                    <h2 class="text-primary fw-semibold mb-0">{{ $pendingSubscriptions ?? 0 }}</h2>
+                    <div class="dashboard-icon fs-4" data-bs-toggle="tooltip"
+                        data-bs-title="{{ __('dashboard.total_pending_subscriptions') }}">
+                        <i class="fa-solid fa-exclamation"></i>
+
+                    </div>
+                </div>
+                <h5 class="mb-0">{{ __('dashboard.total_pending_subscriptions') }}</h5>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+
+
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-2">
+                <select id="plan-filter" class="form-select select2">
+                    <option value="">{{__('messages.select_plan')}}</option>
+                    @foreach($plans as $plan)
+                    <option value="{{ $plan->id }}" {{ request()->get('plan_id') == $plan->id ? 'selected' : '' }}>
+                        {{ $plan->name }}
+                        ({{ $plan->duration . ' ' . str_replace('ly', '', $plan->type) }})
+
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2 mt-md-0 mt-3">
+                <input type="text" name="date_range" id="date_range" value="" class="form-control dashboard-date-range"
+                    placeholder="{{ __('messages.select_date_range') }} " />
+            </div>
+
+
+
+            <div class="col-md-3 mt-md-0 mt-3">
+                <button id="filter-btn" class="btn btn-primary me-2">{{ __('messages.filter') }}</button>
+                <button id="reset-btn" class="btn btn-primary">{{ __('messages.reset') }}</button>
+            </div>
+
+            <div class="col-md-2">
+                <div class="form-group">
+                    <select class="form-select" id="status_filter" name="status">
+                        <label class="form-label">{{ __('frontend.status') }}</label>
+                        <option value="">{{ __('frontend.status') }}</option>
+                        <option value="active">{{ __('frontend.active') }}</option>
+                        <option value="inactive">{{ __('frontend.inactive') }}</option>
+                        <option value="pending">{{ __('frontend.pending') }}</option>
+                        <option value="cancel">{{ __('frontend.cancelled') }}</option>
                     </select>
                 </div>
-                <div class="col-md-2 mt-md-0 mt-3">
-                <input type="text" name="date_range" id="date_range" value="" class="form-control dashboard-date-range" placeholder="{{ __('messages.select_date_range') }} " />
-                </div>
-                <div class="col-md-2">
-                    <div class="form-group">
-                        <select class="form-select" id="status_filter" name="status">
-                            <label class="form-label">{{ __('frontend.status') }}</label>
-                            <option value="">{{ __('frontend.status') }}</option>
-                            <option value="active">{{ __('frontend.active') }}</option>
-                            <option value="inactive">{{ __('frontend.inactive') }}</option>
-                            <option value="cancel">{{ __('frontend.cancelled') }}</option>
-                        </select>
-                    </div>
-                </div>
+            </div>
 
-
-                <div class="col-md-3 mt-md-0 mt-3">
-                    <button id="filter-btn" class="btn btn-primary">{{ __('messages.filter') }}</button>
-                    <button id="reset-btn" class="btn btn-primary">{{ __('messages.reset') }}</button>
-
-                </div>
-
-                <div class="col-lg-3 col-md-4 mt-lg-0 mt-3">
-                    <div class="input-group">
-                        <span class="input-group-text" id="addon-wrapping">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </span>
-                        <input type="text" name="search" class="form-control dt-search"
-                            placeholder="{{ __('messages.search') }}..." aria-label="Search"
-                            aria-describedby="addon-wrapping">
-                    </div>
+            <div class="col-lg-3 col-md-4 mt-lg-0 mt-3">
+                <div class="input-group">
+                    <span class="input-group-text" id="addon-wrapping">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" name="search" class="form-control dt-search"
+                        placeholder="{{ __('messages.search') }}..." aria-label="Search"
+                        aria-describedby="addon-wrapping">
                 </div>
             </div>
-            <table id="datatable" class="table border table-responsive rounded">
-            </table>
         </div>
+        <table id="datatable" class="table border table-responsive rounded">
+        </table>
     </div>
+</div>
 
-    <div data-render="app">
+<div data-render="app">
 
 
-     
 
-    </div>
+
+</div>
 @endsection
 
 @push('after-styles')
-    <!-- DataTables Core and Extensions -->
-    <link rel="stylesheet" href="{{ asset('vendor/datatable/datatables.min.css') }}">
+<!-- DataTables Core and Extensions -->
+<link rel="stylesheet" href="{{ asset('vendor/datatable/datatables.min.css') }}">
 @endpush
 
 @push('after-scripts')
-    <!-- DataTables Core and Extensions -->
-    <script type="text/javascript" src="{{ asset('vendor/datatable/datatables.min.js') }}"></script>
+<!-- DataTables Core and Extensions -->
+<script type="text/javascript" src="{{ asset('vendor/datatable/datatables.min.js') }}"></script>
 
-    <script src="{{ mix('js/jszip.min.js') }}"></script>
-    <script src="{{ mix('js/pdfmake.min.js') }}"></script>
-    <script src="{{ mix('js/vfs_fonts.js') }}"></script>
-    <script src="{{ mix('js/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ mix('js/buttons.html5.min.js') }}"></script>
-    <script src="{{ mix('js/buttons.print.min.js') }}"></script>
-    
+<script src="{{ mix('js/jszip.min.js') }}"></script>
+<script src="{{ mix('js/pdfmake.min.js') }}"></script>
+<script src="{{ mix('js/vfs_fonts.js') }}"></script>
+<script src="{{ mix('js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ mix('js/buttons.html5.min.js') }}"></script>
+<script src="{{ mix('js/buttons.print.min.js') }}"></script>
 
 
-    <script type="text/javascript" defer>
-        
-        const search = $('input[name="search"]').val();
+
+<script type="text/javascript" defer>
+    const search = $('input[name="search"]').val();
         const data_table_limit = $('meta[name="data_table_limit"]').attr('content')
 
         document.addEventListener('DOMContentLoaded', (event) => {
@@ -398,53 +404,55 @@ $('#datatable').DataTable().ajax.reload();
 
         });
 
-        // Add this after DataTable initialization
-        $(document).on('click', '.delete-subscription', function() {
-            const id = $(this).data('id');
-            
-            Swal.fire({
-                title: "{{ __('messages.are_you_sure') }}",
-                text: "{!! __('messages.you_wont_be_able_to_revert_this') !!}",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: "{{ __('messages.yes_delete_it') }}",
-                cancelButtonText: "{{ __('messages.cancel') }}"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: "{{ route('backend.subscriptions.destroy', '') }}/" + id,
-                        type: 'DELETE',
-                        data: {
-                            _token: "{{ csrf_token() }}"
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire(
-                                    "{{ __('messages.deleted') }}",
-                                    response.message,
-                                    'success'
-                                );
-                                $('#datatable').DataTable().ajax.reload();
-                            } else {
-                                Swal.fire(
-                                    "{{ __('messages.error') }}",
-                                    response.message,
-                                    'error'
-                                );
-                            }
-                        },
-                        error: function(xhr) {
-                            Swal.fire(
-                                "{{ __('messages.error') }}",
-                                "{{ __('messages.something_went_wrong') }}",
-                                'error'
-                            );
-                        }
-                    });
+// Add this after DataTable initialization
+$(document).on('click', '.delete-subscription', function() {
+    const id = $(this).data('id');
+    const fullName = $(this).closest('tr').find('td:eq(0)').text(); 
+
+    Swal.fire({
+        title: `Are you sure you want to delete ${fullName} from All Subscriptions?`,
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: "{{ __('messages.yes_delete_it') }}",
+        cancelButtonText: "{{ __('messages.cancel') }}"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "{{ route('backend.subscriptions.destroy', '') }}/" + id,
+                type: 'DELETE',
+                data: {
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire(
+                            "{{ __('messages.deleted') }}",
+                            response.message,
+                            'success'
+                        );
+                        $('#datatable').DataTable().ajax.reload();
+                    } else {
+                        Swal.fire(
+                            "{{ __('messages.error') }}",
+                            response.message,
+                            'error'
+                        );
+                    }
+                },
+                error: function(xhr) {
+                    Swal.fire(
+                        "{{ __('messages.error') }}",
+                        "{{ __('messages.something_went_wrong') }}",
+                        'error'
+                    );
                 }
             });
-        });
-    </script>
+        }
+    });
+});
+
+</script>
 @endpush

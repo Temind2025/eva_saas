@@ -4,12 +4,12 @@
       <FormHeader :currentId="currentId" :editTitle="editTitle" :createTitle="createTitle"></FormHeader>
       <div class="offcanvas-body">
               <div class="text-center upload-image-box">
-                <img :src="ImageViewer || defaultImage" alt="feature-image" class="img-fluid mb-2 avatar-140 rounded" />
+                <img :src="ImageViewer || defaultImage" alt="image" class="img-fluid mb-2 avatar-140 rounded" />
                 <div v-if="validationMessage" class="text-danger mb-2">{{ validationMessage }}</div>
                 <div class="d-flex align-items-center justify-content-center gap-2">
                   <input type="file" ref="profileInputRef" class="form-control d-none" id="feature_image" name="feature_image" @change="fileUpload" accept=".jpeg, .jpg, .png, .gif" />
                   <label class="btn btn-sm btn-primary" for="feature_image">{{ $t('messages.upload') }}</label>
-                  <input type="button" class="btn brn-sm btn-secondary" name="remove" :value="$t('messages.remove')" @click="removeLogo()" v-if="ImageViewer" />
+                  <input type="button" class="btn btn-sm btn-secondary" :value="$t('messages.remove')" @click="removeLogo()" v-if="ImageViewer" />
                 </div>
               </div>
         <InputField class="col-md-12" type="text" :is-required="true" :label="$t('slider.lbl_name')" :placeholder="$t('slider.enter_name')" v-model="name" :error-message="errors['name']" :error-messages="errorMessages['name']"></InputField>
@@ -79,10 +79,18 @@ const fileUpload = async (e) => {
   const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
 
   if (file) {
-    if (file.size > maxSizeInBytes) {
-      // File is too large
-      validationMessage.value = `File size exceeds ${maxSizeInMB} MB. Please upload a smaller file.`;
+    // Allowed image MIME types
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    
+    if (!allowedTypes.includes(file.type)) {
+      validationMessage.value = 'Only image files (jpeg, jpg, png, gif) are allowed.';
       // Clear the file input
+      profileInputRef.value.value = '';
+      return;
+    }
+    
+    if (file.size > maxSizeInBytes) {
+      validationMessage.value = `File size exceeds ${maxSizeInMB} MB. Please upload a smaller file.`;
       profileInputRef.value.value = '';
       return;
     }
@@ -90,13 +98,14 @@ const fileUpload = async (e) => {
     await readFile(file, (fileB64) => {
       ImageViewer.value = fileB64;
       profileInputRef.value.value = '';
-      validationMessage.value = ''; 
+      validationMessage.value = '';
     });
     feature_image.value = file;
   } else {
     validationMessage.value = '';
   }
 };
+
 
 // Function to delete Images
 const removeImage = ({ imageViewerBS64, changeFile }) => {
@@ -217,14 +226,25 @@ const { value: feature_image } = useField('feature_image')
 // Form Submit
 const IS_SUBMITED = ref(false)
 const formSubmit = handleSubmit((values) => {
-  if(IS_SUBMITED.value) return false
-  IS_SUBMITED.value = true
-  if (currentId.value > 0) {
-    updateRequest({ url: UPDATE_URL, id: currentId.value, body: values, type: 'file' }).then((res) => reset_datatable_close_offcanvas(res))
-  } else {
-    storeRequest({ url: STORE_URL, body: values, type: 'file' }).then((res) => reset_datatable_close_offcanvas(res))
+  if (IS_SUBMITED.value) return false;
+
+  // Validate image file presence
+  if (!feature_image.value) {
+    validationMessage.value = 'Please upload a feature image before submitting.';
+    return false;
   }
-})
+
+  IS_SUBMITED.value = true;
+
+  if (currentId.value > 0) {
+    updateRequest({ url: UPDATE_URL, id: currentId.value, body: values, type: 'file' })
+      .then((res) => reset_datatable_close_offcanvas(res));
+  } else {
+    storeRequest({ url: STORE_URL, body: values, type: 'file' })
+      .then((res) => reset_datatable_close_offcanvas(res));
+  }
+});
+
 
 // Reload Datatable, SnackBar Message, Alert, Offcanvas Close
 const reset_datatable_close_offcanvas = (res) => {

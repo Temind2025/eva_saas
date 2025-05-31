@@ -55,10 +55,12 @@
     <div data-render="app">
 
 
-        <plan-offcanvas
-            create-title="{{ __('messages.create') }} {{ __('messages.new') }} {{ __($module_title) }}"
-            edit-title="{{ __('messages.edit') }} {{ __($module_title) }}">
-        </plan-offcanvas>
+<plan-offcanvas
+    create-title="{{ __('messages.create') }} {{ __('messages.new') }} {{ is_array($module_title) ? implode(' ', $module_title) : $module_title }}"
+    edit-title="{{ __('messages.edit') }} {{ is_array($module_title) ? implode(' ', $module_title) : $module_title }}">
+</plan-offcanvas>
+
+
 
     </div>
 @endsection
@@ -159,7 +161,7 @@
                     }
                 },
                 columns: [
-                    { data: 'start_date', name: 'start_date', title:"{{ __('frontend.date') }}" },
+                    // { data: 'start_date', name: 'start_date', title:"{{ __('frontend.date') }}" },
                     {
                         data: 'user.first_name',
                         name: 'user.first_name',

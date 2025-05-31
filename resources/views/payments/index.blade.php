@@ -4,10 +4,10 @@
     {{ __($module_action) }}
 @endsection
 
-
 @push('after-styles')
     <link rel="stylesheet" href="{{ mix('modules/constant/style.css') }}">
 @endpush
+
 @section('content')
     <div class="card">
         <div class="card-body">
@@ -81,8 +81,6 @@
     </div>
 
     <div data-render="app">
-
-
     </div>
 @endsection
 
@@ -150,8 +148,6 @@
                 name: 'payment_date',
                 title: "{{ __('messages.lbl_date') }}"
             },
-            
-
         ];
 
         const actionColumn = [{
@@ -162,7 +158,7 @@
             title: "{{ __('messages.lbl_action') }}",
             render: function(data, type, row) {
                 let buttons = ''; // Ensure buttons is defined
-console.log(row);
+                console.log(row);
                 if (row.status !== 'Approved') {
                     buttons += `
                 <button class="btn btn-primary btn-sm btn-edit" onclick="editPayment(${row.id})" title="{{ __('messages.edit') }}" data-bs-toggle="tooltip">
@@ -175,7 +171,6 @@ console.log(row);
                     {{ __('messages.approve') }}
                 </button>
             `;
-            
                 }
                 console.log(buttons);
                 return buttons;
@@ -183,7 +178,6 @@ console.log(row);
         }];
         let finalColumns = [...columns];
         if (module_name === 'payment') {
-         
             finalColumns = [...columns, ...actionColumn]; // Include action column if module_name is 'payment'
         }
 
@@ -212,24 +206,32 @@ console.log(row);
             });
         })
 
-        // $('input[name="search"]').on('keyup', function() {
+        // Function to check if any filter is applied
+        function isAnyFilterApplied() {
+            const planId = $('#plan-filter').val();
+            const dateRange = $('input[name="date_range"]').val();
+            const search = $('input[name="search"]').val();
 
-        //     const plan_id = $('#plan-filter').val();
-        //     const date_range = $('input[name="date_range"]').val();
-        //     const search = $('input[name="search"]').val();
+            return planId || dateRange || search;
+        }
 
+        // Function to toggle the visibility of the Reset button
+        function toggleResetButton() {
+            const resetButton = $('#reset-btn');
+            if (isAnyFilterApplied()) {
+                resetButton.show();
+            } else {
+                resetButton.hide();
+            }
+        }
 
-        //     $('#datatable').DataTable().settings()[0].ajax.data = {
-        //         plan_id: plan_id,
-        //         date_range: date_range,
-        //         search: search
-        //     };
+        // Initialize the Reset button visibility
+        toggleResetButton();
 
-        //     // Trigger reload again with updated filters
-        //     $('#datatable').DataTable().ajax.reload();
-
-        // });
-
+        // Add event listeners to filter inputs to update the Reset button visibility
+        $('#plan-filter').on('change', toggleResetButton);
+        $('input[name="date_range"]').on('change', toggleResetButton);
+        $('input[name="search"]').on('keyup', toggleResetButton);
 
         // When the filter button is clicked
         $('#filter-btn').on('click', function() {
@@ -260,15 +262,19 @@ console.log(row);
             if (fp) {
                 fp.clear(); // Clear selection properly
             }
+
             // Optionally, you can also pass the filter data if needed:
             $('#datatable').DataTable().settings()[0].ajax.data = {
                 plan_id: '',
                 date_range: '',
-                serach: '',
+                search: '',
             };
 
             // Reload the DataTable without filters
-            $('#datatable').DataTable().ajax.reload(); // Assuming the table has the ID 'myTable'
+            $('#datatable').DataTable().ajax.reload();
+
+            // Hide the Reset button after resetting
+            toggleResetButton();
         });
 
         function selectedIds() {
@@ -301,8 +307,14 @@ console.log(row);
             window.location.href = route;
         }
 
+        // function deletePayment(payment_id) {
+        //     var route = "{{ route('backend.payment.delete') }}";
+
         function deletePayment(payment_id) {
+            $('.btn-delete').tooltip('dispose');
+            $('.tooltip').remove();
             var route = "{{ route('backend.payment.delete') }}";
+
 
             Swal.fire({
                 title: "{{ __('messages.delete_payment_confirmation') }}",
@@ -398,7 +410,6 @@ console.log(row);
             });
 
         });
-
 
         document.addEventListener("DOMContentLoaded", function() {
             const selectAction = document.getElementById("select_action");

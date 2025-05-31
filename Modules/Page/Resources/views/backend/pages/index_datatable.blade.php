@@ -1,7 +1,7 @@
 @extends('backend.layouts.app')
 
 @section('title')
-    {{ __($module_action) }} {{ __($module_title) }}
+     {{ __($module_title) }}
 @endsection
 
 
@@ -97,7 +97,7 @@ const columns = [
             initDatatable({
                 url: '{{ route("backend.$module_name.index_data") }}',
                 finalColumns,
-                orderColumn: [[ 5, "desc" ]],
+                orderColumn: [[ 4, "desc" ]],
             })
         })
 
@@ -132,6 +132,11 @@ const columns = [
       $('#quick-action-type').change(function () {
         resetQuickAction()
       });
+      $(document).on('click', '[data-bs-toggle="tooltip"]', function () {
+          $(this).tooltip('dispose');
+          $('.tooltip').remove();
+      });
+
 
  
     </script>

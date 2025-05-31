@@ -162,7 +162,7 @@ return [
     'tax_amount' => 'Tax Amount',
     'total_amount' => 'Total Amount',
     'invoice' => 'Invoice',
-    'month' => 'Month',
+    'Month' => 'Month',
     'year' => 'Year',
     'week' => 'Week',
     'day' => 'Day',
@@ -180,8 +180,8 @@ return [
     'pay_monthly'=>'Pay Monthly',
     'pay_yearly'=>'Pay Yearly',
     'pay_weekly'=>'Pay Weekly',
-    'monthly' => 'Monthly',
-    'yearly' => 'Yearly',
+    'monthly' => 'Months',
+    'yearly' => 'Year',
     'weekly' => 'Weekly',
     'get_started'=>'Get Started',
     'renew'=>'Renew',
@@ -252,5 +252,6 @@ return [
     'cancelled' => 'Cancelled',
     'vendor_name' => 'Vendor Name',
     'enter_username' => 'Enter Username',
+    'history_not_found' => 'History not found',
 ];
 

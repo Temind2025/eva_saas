@@ -43,8 +43,12 @@ class CommonNotification extends Notification implements ShouldQueue
 
         $userType = $data['user_type'];
         $admin_id = $data['admin_id'];
+
         if($admin_id == null){
             $admin_id = \App\Models\User::where('user_type', 'admin')->first()->id;
+        }
+        if($data['notification_group'] == 'subscription'){
+            $admin_id = \App\Models\User::where('user_type', 'super admin')->first()->id;
         }
         $notifications = NotificationTemplate::where('type', $this->type)
             ->with('defaultNotificationTemplateMap')
@@ -54,22 +58,25 @@ class CommonNotification extends Notification implements ShouldQueue
         $notify_data = NotificationTemplateContentMapping::where('template_id', $notifications->id)->get();
 
         $templateData = $notify_data->where('user_type', $userType)->first();
+
         if (!$templateData) {
             throw new \Exception("Template data for user type '{$userType}' not found.");
         }
 
-        $templateDetail = $templateData->mail_template_detail ?? null;
+        $templateDetail = $templateData->notification_template_detail ?? null;
 
 
         foreach ($this->data as $key => $value) {
             $replacement = is_scalar($value) ? (string)$value : ''; 
             $templateDetail = str_replace('[[ ' . $key . ' ]]', $replacement, $templateDetail);
         }
-          
 
         $this->data['type'] = $templateData->subject ?? 'None';
         $this->data['message'] = $templateDetail ?? __('messages.default_notification_body');
         $this->appData = $notifications->channels;
+        $this->notification = $templateData;
+
+
     }
 
 
@@ -93,10 +100,10 @@ class CommonNotification extends Notification implements ShouldQueue
 
                     switch ($key) {
 
-                        case 'PUSH_NOTIFICATION':
-                            array_push($notification_settings, FcmChannel::class);
+                        // case 'PUSH_NOTIFICATION':
+                        //     array_push($notification_settings, FcmChannel::class);
 
-                            break;
+                        //     break;
 
                         case 'IS_MAIL':
                             array_push($notification_settings, 'mail');
@@ -182,7 +189,7 @@ class CommonNotification extends Notification implements ShouldQueue
             ->bcc(isset($this->notification->bcc) ? json_decode($this->notification->bcc) : [])
             ->cc(isset($this->notification->cc) ? json_decode($this->notification->cc) : [])
             ->subject($this->subject);
-    }
+  }
 
     public function toWebhook($notifiable)
     {

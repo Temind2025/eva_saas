@@ -22,7 +22,7 @@
                   <img :src="ImageViewer || defaultImage" alt="feature-image" class="img-fluid mb-2 avatar-140 rounded" />
                   <div v-if="validationMessage" class="text-danger mb-2">{{ validationMessage }}</div>
                   <div class="d-flex align-items-center justify-content-center gap-2">
-                    <input type="file" ref="profileInputRef" class="form-control d-none" id="feature_image" name="feature_image" @change="fileUpload" accept=".jpeg, .jpg, .png, .gif" />
+                    <input type="file" ref="profileInputRef" class="form-control d-none" id="feature_image" name="feature_image" @change="fileUpload" />
                     <label class="btn btn-sm btn-primary" for="feature_image">{{ $t('messages.upload') }}</label>
                     <input type="button" class="btn btn-sm btn-secondary" name="remove" :value="$t('messages.remove')" @click="removeLogo()" v-if="ImageViewer" />
                   </div>
@@ -293,12 +293,23 @@ const validationMessage = ref('');
 // File Upload Function
 const ImageViewer = ref(null)
 const profileInputRef = ref(null)
+const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
 const fileUpload = async (e) => {
   let file = e.target.files[0];
   const maxSizeInMB = 2;
   const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
 
   if (file) {
+    // Check if the file type is allowed
+    if (!allowedImageTypes.includes(file.type)) {
+      validationMessage.value = 'Only JPEG, PNG, and GIF images are allowed.';
+      // Clear the file input
+      profileInputRef.value.value = '';
+      return;
+    }
+
+    // Check file size
     if (file.size > maxSizeInBytes) {
       // File is too large
       validationMessage.value = `File size exceeds ${maxSizeInMB} MB. Please upload a smaller file.`;
@@ -309,14 +320,18 @@ const fileUpload = async (e) => {
 
     await readFile(file, (fileB64) => {
       ImageViewer.value = fileB64;
+      validationMessage.value = '';
       profileInputRef.value.value = '';
-      validationMessage.value = ''; 
     });
+
     feature_image.value = file;
   } else {
     validationMessage.value = '';
   }
 };
+
+
+
 
 // Function to delete Images
 const removeImage = ({ imageViewerBS64, changeFile }) => {
@@ -430,22 +445,29 @@ const currentId = useModuleId(() => {
 
 const IS_SUBMITED = ref(false)
 const formSubmit = handleSubmit((values) => {
-  if(IS_SUBMITED.value) return false
+  if (IS_SUBMITED.value) return false;
 
-  if(props.customefield > 0) {
-    values.custom_fields_data = JSON.stringify(values.custom_fields_data)
+  // Check if there are any validation errors
+  if (Object.keys(errors.value).length > 0) {
+    // Prevent form submission if there are validation errors
+    return;
+  }
+
+  if (props.customefield.length > 0) {
+    values.custom_fields_data = JSON.stringify(values.custom_fields_data);
   }
 
   if (currentId.value > 0) {
     // Convert address object to JSON string
     values.address = JSON.stringify(values.address);
-    updateRequest({ url: UPDATE_URL, id: currentId.value, body: values, type: 'file' }).then((res) => reset_datatable_close_offcanvas(res))
+    updateRequest({ url: UPDATE_URL, id: currentId.value, body: values, type: 'file' }).then((res) => reset_datatable_close_offcanvas(res));
   } else {
     // Convert address object to JSON string
     values.address = JSON.stringify(values.address);
-    storeRequest({ url: STORE_URL, body: values, type: 'file' }).then((res) => reset_datatable_close_offcanvas(res))
+    storeRequest({ url: STORE_URL, body: values, type: 'file' }).then((res) => reset_datatable_close_offcanvas(res));
   }
-})
+});
+
 
 // Reload Datatable, SnackBar Message, Alert, Offcanvas Close
 const reset_datatable_close_offcanvas = (res) => {

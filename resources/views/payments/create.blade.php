@@ -69,7 +69,11 @@
         </div>
 
      
-        <button type="submit" class="btn btn-primary mt-4">{{ __('frontend.submit') }}</button>
+        <button type="submit" class="btn btn-primary mt-4" id="submit-button">
+    <span class="spinner-border spinner-border-sm me-2 d-none" id="submit-spinner" role="status" aria-hidden="true"></span>
+    {{ __('frontend.submit') }}
+</button>
+
     </form>
 </div>
     </div>
@@ -104,11 +108,12 @@
                     error.insertAfter(element);
                 }
         },
-        submitHandler: function (form) {
-            // Clear validation errors before submitting
-            $(form).find('.error').remove();
-            form.submit(); // Submit the form
-        }
+            submitHandler: function (form) {
+                $('#submit-button').attr('disabled', true);
+                $('#submit-spinner').removeClass('d-none');
+
+                form.submit(); // Submit the form
+            }
     });
 
     // Plan selection change handler
@@ -116,6 +121,8 @@
         var selectedPlan = $('#plan_id option:selected');
         var formattedPrice = selectedPlan.data('formatted-price'); 
         var rawPrice = selectedPlan.data('price');
+  
+        formattedPrice = formattedPrice.replace(/(\D)\s+(\d)/, '$1$2');
 
         // Update price display
         $('#amount_display').val(formattedPrice);  

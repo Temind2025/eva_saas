@@ -146,7 +146,7 @@ return [
     'service' => 'Service',
     'total_count' => 'Total Count',
     'total_amount' => 'Total Amount',
-    'top_service_notfound' => 'Not found top services',
+    'top_service_notfound' => 'Top Services Not Found.',
     'no_action' => 'No Action',
     'status' => 'Status',
     'delete' => 'Delete',
@@ -686,6 +686,14 @@ return [
     'create' => 'Create',
     'edit' => 'Edit',
     'delete' => 'Delete',
+
+    'are_you_sure_title' => 'Are you sure?',
+    'are_you_sure_vendor' => 'Are you sure you want to delete :name Vendor?',
+    'yes_delete' => 'Yes, Delete',
+    'cancel' => 'Cancel',
+    'deleted' => 'Deleted!',
+    'error' => 'Error!',
+    'delete_failed' => 'Something went wrong while deleting.',
 
 
 
@@ -1384,8 +1392,8 @@ return [
     "mobile_required" => "Contact Number is a required field",
     "valid_mobile" => "Phone Number must contain only digits",
     "password_required" => "Password is required",
-    "password_min" => "Password must be at least 8 characters long",
-    "password_max" => "Password must be at most 12 characters long",
+    "password_min" => "Password Length Should be 8 to 14 characters Long.",
+    "password_max" => "Password Length Should be 8 to 14 characters Long.",
     "confirm_password_required" => "Confirm password is required",
     "password_match" => "Passwords must match",
     'delete_file' => 'Delete File',
@@ -1422,11 +1430,16 @@ return [
     'all_subscriptions' => 'All Subscriptions',
     'user_name' => 'User Name',
     'vendor_name' => 'Vendor Name',
-'generated_on' => 'Generated On',
+    'generated_on' => 'Generated On',
     'username' => 'UserName',
     'user_name_field_is_required' => 'The Username field is required',
     'enter_usernamr' => 'Enter Username',
-    'username_required' => 'Username field is required'
-    
+    'username_required' => 'Username field is required',
+    'package_price' => 'Package Price',
+    'inquiry_email_required' => 'Inquiry Email is required',
+    'site_description_required' => 'Site Description is required',
+    'helpline_number_required'=>'Helpline number is required',
+    'inquriy_email_required'=>'Inquriy email is required',
+
 
 ];

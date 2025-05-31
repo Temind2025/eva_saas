@@ -135,5 +135,10 @@
             var route = "{{ route('backend.blog.delete', 'blog_id') }}".replace('blog_id', blog_id);
             confirmDelete(route, blog_id);
         }
+        $(document).on('click', '[data-bs-toggle="tooltip"]', function () {
+            $(this).tooltip('dispose');
+            $('.tooltip').remove();
+        });
+
     </script>
 @endpush

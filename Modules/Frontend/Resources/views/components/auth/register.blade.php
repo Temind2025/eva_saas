@@ -199,14 +199,29 @@
 
 
 <script type="text/javascript">
+    
+document.addEventListener('DOMContentLoaded', function () {
+    const baseUrl = document.querySelector('meta[name="baseUrl"]').getAttribute('content');
 
-    var input = document.querySelector("#mobile");
-        var iti = window.intlTelInput(input, {
-            initialCountry: "in",
-            separateDialCode: true,
-            utilsScript: "/node_modules/intl-tel-input/build/js/utils.js"
-        });
+    const style = document.createElement('style');
+    style.innerHTML = `
+      :root {
+        --iti-path-flags-1x: url("${baseUrl}/images/vendor/intl-tel-input/build/flags.webp");
+        --iti-path-flags-2x: url("${baseUrl}/images/vendor/intl-tel-input/build/flags@2x.webp");
+        --iti-path-globe-1x: url("${baseUrl}/images/vendor/intl-tel-input/build/globe.webp");
+        --iti-path-globe-2x: url("${baseUrl}/images/vendor/intl-tel-input/build/globe@2x.webp");
+      }
+    `;
+    document.head.appendChild(style);
 
+    // Initialize intl-tel-input AFTER setting styles
+    const input = document.querySelector("#mobile");
+    window.intlTelInput(input, {
+      initialCountry: "in",
+      separateDialCode: true,
+      utilsScript: baseUrl + "/node_modules/intl-tel-input/build/js/utils.js"
+    });
+  });
 
 
     document.querySelector("form").addEventListener("submit", function (e) {

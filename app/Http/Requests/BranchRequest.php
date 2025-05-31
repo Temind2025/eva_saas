@@ -27,6 +27,8 @@ class BranchRequest extends FormRequest
     {
         switch (strtolower($this->getMethod())) {
             case 'post':
+            case 'patch':
+                $branchId = $this->route('branch');
                 return [
                     'name' => 'required|string|max:255',
                     'branch_for' => 'required',
@@ -40,6 +42,7 @@ class BranchRequest extends FormRequest
                     'address.postal_code' => 'string',
                     'payment_method' => 'required',
                     'status' => 'boolean',
+
                 ];
                 break;
             case 'put':

@@ -102,10 +102,10 @@ class CustomersController extends Controller
                 'value' => 'varification_status',
                 'text' => __('customer.lbl_verification_status'),
             ],
-            [
-                'value' => 'is_banned',
-                'text' => __('customer.lbl_blocked'),
-            ],
+            // [
+            //     'value' => 'is_banned',
+            //     'text' => __('customer.lbl_blocked'),
+            // ],
             [
                 'value' => 'status',
                 'text' => __('customer.lbl_status'),
@@ -253,7 +253,7 @@ class CustomersController extends Controller
         $data = $request->all();
 
         $data['created_by'] = auth()->id();
-
+        $data['user_type'] = 'user';
         $data = User::create($data);
 
         $data->syncRoles(['user']);

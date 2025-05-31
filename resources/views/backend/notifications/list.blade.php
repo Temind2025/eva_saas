@@ -26,17 +26,35 @@
                     </div>
                   </a>
                 </div>
+                 @elseif($notification->data['data']['notification_group']=='subscription')
+                <div class="dropdown-item-1 float-none p-3 list-unstyled iq-sub-card  {{ $notification->read_at ? '':'notify-list-bg'}} ">
+                  <a href="{{ route('backend.subscriptions.index') }}" class="">
+                    <h6>{{ $notification->data['data']['logged_in_user_fullname']}}</h6>
+                    <div class="list-item d-flex">
+                        <div class="me-3 mt-1">
+                            <button type="button" class="btn btn-primary-subtle btn-icon rounded-pill">
+                                {{ strtoupper(substr($notification->data['data']['username'], 0, 1)) }}
+                            </button>
+                        </div>
+
+                        <div class="list-style-detail">
+                            <p class="text-body mb-1">{{ __('messages.subscriptions') }}: <span class="text-primary"> {!! $notification->data['data']['message'] !!}</span></p>
+                            
+                        </div>
+                    </div>
+                  </a>
+                </div>
                  @else
                      <div class="dropdown-item-1 float-none p-3 list-unstyled iq-sub-card  {{ $notification->read_at ? '':'notify-list-bg'}} ">
                      <a href="{{ route('backend.orders.show', ['id' => $notification->data['data']['id']]) }}" class="">
                      <div class="d-flex justify-content-between">
                     <h6>{{ $notification->data['subject']}}</h6>
-                    <h6>{{ ($notification->data['data']['order_code']) }} </h6>
+                    <h6>{{ ($notification->data['data']['order_code'] ?? '') }} </h6>
                     </div>
                     <div class="list-item d-flex">
                         <div class="me-3 mt-1">
                             <button type="button" class="btn btn-primary-subtle btn-icon rounded-pill">
-                                {{ strtoupper(substr($notification->data['data']['user_name'], 0, 1)) }}
+                                {{ strtoupper(substr($notification->data['data']['user_name'], 0, 1 ?? '')) }}
                             </button>
                         </div>
                          <div class="list-style-detail">
@@ -48,21 +66,21 @@
                             </div>
 
                              @elseif($notification->data['data']['notification_type']=='order_proccessing')
-                            <p class="text-body mb-1">Order <span class="text-black">{{ ($notification->data['data']['order_code']) }}</span> {{__('messages.has_been_Processing.')}}</p>
+                            <p class="text-body mb-1">Order <span class="text-black">{{ ($notification->data['data']['order_code'] ?? '') }}</span> {{__('messages.has_been_Processing.')}}</p>
                             <div class="d-flex justify-content-between">
                                 <p class="text-body">{{ ($notification->data['data']['order_date']) }}</p>
                                 <p class="text-body">{{ ($notification->data['data']['order_time']) }}</p>
                             </div>
 
                              @elseif($notification->data['data']['notification_type']=='order_delivered')
-                            <p class="text-body mb-1">Order <span class="text-black">{{ ($notification->data['data']['order_code']) }} </span> {{__('messages.has_been_delivered.')}}</p>
+                            <p class="text-body mb-1">Order <span class="text-black">{{ ($notification->data['data']['order_code'] ?? '') }} </span> {{__('messages.has_been_delivered.')}}</p>
                             <div class="d-flex justify-content-between">
                                 <p class="text-body">{{ ($notification->data['data']['order_date']) }}</p>
                                 <p class="text-body">{{ ($notification->data['data']['order_time']) }}</p>
                             </div>
 
                               @elseif($notification->data['data']['notification_type']=='order_cancelled')
-                            <p class="text-body mb-1">Order <span class="text-black">{{ ($notification->data['data']['order_code']) }} </span> {{__('messages.has_been_cancelled.')}}</p>
+                            <p class="text-body mb-1">Order <span class="text-black">{{ ($notification->data['data']['order_code'] ?? '') }} </span> {{__('messages.has_been_cancelled.')}}</p>
                             <div class="d-flex justify-content-between">
                                 <p class="text-body">{{ ($notification->data['data']['order_date']) }}</p>
                                 <p class="text-body">{{ ($notification->data['data']['order_time']) }}</p>

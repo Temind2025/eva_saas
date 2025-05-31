@@ -1,7 +1,7 @@
 @extends('backend.layouts.app')
 
 @section('title')
-    {{ __($module_action) }} {{ __($module_title) }}
+    {{ __($module_title) }}
 @endsection
 
 @section('content')
@@ -237,5 +237,9 @@
         $('#quick-action-type').change(function() {
             resetQuickAction()
         });
+        $(document).on('click', '[data-bs-toggle="tooltip"]', function () {
+        $(this).tooltip('dispose');
+        $('.tooltip').remove();
+});
     </script>
 @endpush

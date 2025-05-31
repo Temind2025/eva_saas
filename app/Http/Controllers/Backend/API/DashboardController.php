@@ -139,6 +139,7 @@ class DashboardController extends Controller
             $service = Service::find($serviceGallery->service_id);
 
             if ($service) {
+                $serviceGallery->service = $service;
                 return response()->json([
                     'status' => true,
                     'data' => [

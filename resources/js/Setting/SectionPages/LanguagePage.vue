@@ -160,7 +160,7 @@ values.data=data
 
 storeRequest({ url: STORE_URL, body: values }).then((res) => {
   if (res.status) {
-    window.successSnackbar(res.message)
+    window.successSnackbar("Language Setting updated successfully!") 
   }
 })
 })

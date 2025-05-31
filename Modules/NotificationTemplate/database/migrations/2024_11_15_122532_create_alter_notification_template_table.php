@@ -181,7 +181,7 @@ return new class extends Migration
             'label' => 'Booking confirmation',
             'status' => 1,
             'to' => '["admin", "manager", "user"]',
-            'channels' => ['IS_MAIL' => '0', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
         ]);
 
         // Notification template for admin
@@ -193,7 +193,7 @@ return new class extends Migration
             'user_type' => 'admin',
             'template_detail' => '
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
-            <span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Subject: Appointment Confirm - Thank You!</span>
+             <span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Subject: Appointment Confirm - Thank You!</span>
             </p>
             <p><strong id="docs-internal-guid-7d6bdcce-7fff-5035-731b-386f9021a5db" style="font-weight: normal;">&nbsp;</strong></p>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
@@ -212,7 +212,7 @@ return new class extends Migration
             <span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Appointment Date: [[ booking_date ]]</span>
             </p>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
-            <span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Service/Event: [[ booking_services_names ]]</span>
+            <span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Service/Event: [[ service_name ]]</span>
             </p>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
             <span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Date: [[ booking_date ]]</span>
@@ -229,7 +229,7 @@ return new class extends Migration
             </p>
             <p><strong style="font-weight: normal;">&nbsp;</strong></p>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
-            <span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">We recommend marking your calendar and setting a reminder for the date and time of the event to ensure you don\'t miss your appointment. Should there be any updates or changes to your appointment, we will promptly notify you.</span>
+            <span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">We recommend marking your calendar and setting a reminder for the date and time of the event to ensure you do not miss your appointment. Should there be any updates or changes to your appointment, we will promptly notify you.</span>
             </p>
             <p><strong style="font-weight: normal;">&nbsp;</strong></p>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
@@ -248,16 +248,10 @@ return new class extends Migration
             </p>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
             <span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">[[ company_name ]],</span>
-            </p>
-            <p>&nbsp;</p>
-            <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
-            <span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">[[ company_contact_info ]]</span>
-            </p>
-            <p><span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">&nbsp;</span></p>
-            ',
+            </p>',
             'subject' => 'Booking Confirmation Received!',
             'notification_subject' => 'New Booking Alert.',
-                'notification_template_detail' => '<p>New booking: [[ user_name ]] has booked [[ booking_services_names ]].</p>',
+                'notification_template_detail' => '<p>New booking: [[ user_name ]] has booked [[ service_name ]].</p>',
         ]);
 
 
@@ -289,7 +283,7 @@ return new class extends Migration
 <span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Appointment Date: [[ booking_date ]]</span>
 </p>
 <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
-<span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Service/Event: [[ booking_services_names ]]</span>
+<span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Service/Event: [[ service_name ]]</span>
 </p>
 <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
 <span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Date: [[ booking_date ]]</span>
@@ -334,7 +328,7 @@ return new class extends Migration
 ',
                 'subject' => 'Booking Confirmation Received!',
                 'notification_subject' => 'New Booking Alert',
-                'notification_template_detail' => '<p>New booking: [[ user_name ]] has booked [[ booking_services_names ]].</p>',
+                'notification_template_detail' => '<p>New booking: [[ user_name ]] has booked [[ service_name ]].</p>',
         ]);
 
 
@@ -365,7 +359,7 @@ return new class extends Migration
             <span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Appointment Date: [[ booking_date ]]</span>
             </p>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
-            <span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Service/Event: [[ booking_services_names ]]</span>
+            <span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Service/Event: [[ service_name ]]</span>
             </p>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
             <span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Date: [[ booking_date ]]</span>
@@ -413,7 +407,7 @@ return new class extends Migration
             'label' => 'Check-In On Booking',
             'status' => 1,
             'to' => '["user"]',
-            'channels' => ['IS_MAIL' => '0', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
         ]);
         $template->defaultNotificationTemplateMap()->create([
             'language' => 'en',
@@ -430,7 +424,7 @@ return new class extends Migration
             <h4>Appointment Details</h4>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;"><span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Appointment ID: [[ id ]]</span></p>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;"><span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Appointment Date: [[ booking_date ]]</span></p>
-            <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;"><span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Service/Event: [[ booking_services_names ]]</span></p>
+            <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;"><span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Service/Event: [[ service_name ]]</span></p>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;"><span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Date: [[ booking_date ]]</span></p>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;"><span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Time: [[ booking_time ]]</span></p>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;"><span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Location: [[ venue_address ]]</span></p>
@@ -462,7 +456,7 @@ return new class extends Migration
             'label' => 'Checkout On Booking',
             'status' => 1,
             'to' => '["user"]',
-            'channels' => ['IS_MAIL' => '0', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
         ]);
         $template->defaultNotificationTemplateMap()->create([
             'language' => 'en',
@@ -479,7 +473,7 @@ return new class extends Migration
             <h4>Appointment Details</h4>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;"><span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Appointment ID: [[ id ]]</span></p>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;"><span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Appointment Date: [[ booking_date ]]</span></p>
-            <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;"><span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Service/Event: [[ booking_services_names ]]</span></p>
+            <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;"><span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Service/Event: [[ service_name ]]</span></p>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;"><span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Date: [[ booking_date ]]</span></p>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;"><span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Time: [[ booking_time ]]</span></p>
             <p dir="ltr" style="line-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;"><span style="font-size: 11pt; font-family: Arial; color: #000000; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; text-decoration: none; vertical-align: baseline; white-space: pre-wrap;">Location: [[ venue_address ]]</span></p>
@@ -510,7 +504,7 @@ return new class extends Migration
             'label' => 'Complete On Booking',
             'status' => 1,
             'to' => '["user"]',
-            'channels' => ['IS_MAIL' => '0', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
         ]);
         $template->defaultNotificationTemplateMap()->create([
             'language' => 'en',
@@ -538,7 +532,7 @@ return new class extends Migration
             'label' => 'Cancel On Booking',
             'status' => 1,
             'to' => '["user"]',
-            'channels' => ['IS_MAIL' => '0', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
         ]);
         $template->defaultNotificationTemplateMap()->create([
             'language' => 'en',
@@ -566,7 +560,7 @@ return new class extends Migration
             'label' => 'Quick Booking',
             'status' => 1,
             'to' => '["user"]',
-            'channels' => ['IS_MAIL' => '0', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
         ]);
         $template->defaultNotificationTemplateMap()->create([
             'language' => 'en',
@@ -605,7 +599,7 @@ return new class extends Migration
             'name' => 'change_password',
             'label' => 'Change Password',
             'status' => 1,
-            'channels' => ['IS_MAIL' => '0', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
         ]);
         $template->defaultNotificationTemplateMap()->create([
             'language' => 'en',
@@ -640,7 +634,7 @@ return new class extends Migration
             'name' => 'forget_email_password',
             'label' => 'Forget Email/Password',
             'status' => 1,
-            'channels' => ['IS_MAIL' => '0', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
         ]);
         $template->defaultNotificationTemplateMap()->create([
             'language' => 'en',
@@ -674,7 +668,7 @@ return new class extends Migration
             'label' => 'Order Placed',
             'status' => 1,
             'to' => '["user","admin"]',
-            'channels' => ['IS_MAIL' => '0', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
         ]);
 
 
@@ -721,7 +715,7 @@ return new class extends Migration
             'label' => 'Order Processing',
             'status' => 1,
             'to' => '["user","admin"]',
-            'channels' => ['IS_MAIL' => '0', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
         ]);
 
         // User notification template
@@ -772,7 +766,7 @@ return new class extends Migration
             'label' => 'Order Delivered',
             'status' => 1,
             'to' => '["user","admin"]',
-            'channels' => ['IS_MAIL' => '0', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
         ]);
 
         // User notification template
@@ -821,7 +815,7 @@ return new class extends Migration
             'label' => 'Order Cancelled',
             'status' => 1,
             'to' => '["user","admin"]',
-            'channels' => ['IS_MAIL' => '0', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
+            'channels' => ['IS_MAIL' => '1', 'PUSH_NOTIFICATION' => '1', 'IS_CUSTOM_WEBHOOK' => '0'],
         ]);
 
         // User notification template
